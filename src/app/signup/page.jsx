@@ -15,6 +15,8 @@ import {
 import {connectWallet} from "@/walletconnect/wallectconnect"
 import { contract2, contractABI2 }   from "@/Abi/contracts"
 import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
+
 
 function Signup() {
     const [message, setmessage] = useState("")
@@ -69,7 +71,8 @@ return r
   }
 
   async function handlesubmit() {
-
+    setcontract("")
+let errorfound=false;
    if (userdata.ishospital) {
            try {
 
@@ -104,22 +107,47 @@ alert(
 
 
 if (userdata.ishospital) {
-   const addcontract = await contract.Addhospital(userdata.name);
-   console.log(addcontract,"is theadding hospital name to contract ")
+
    
-  try {
+   
+   try {
+    const addcontract = await contract.Addhospital(userdata.name);
+  console.log(addcontract,"is the afded cpontract ")
+  if (addcontract.gasPrice) {
+     try {
             const docRef = await addDoc(collection(db, "medidatabase"), userdata);
             console.log("Document written with ID: ", docRef.id);
             alert(docRef.id)
 
+router.push(`/signin`);
+
+
           } catch (e) {
+            
             console.error("Error adding document: ", e);
           }
+  }else{
+
+
+    setmessage("transaction not complete ")
+  }
+
+ 
+    
+   } catch (error) {
+   
+    setmessage("transaction not complete ")
+   
+    console.log(error,"addcontract error ",)
+   }
+
+
+
+
   
 
 }
-console.log("no us4r od the ","and")
-router.push(`/signin`);
+// console.log("no us4r od the ","and")
 }
 
 
@@ -127,6 +155,7 @@ router.push(`/signin`);
 
 
     } catch (error) {
+
         console.log(error,"is the eror ")
     }   
         }else{
@@ -152,11 +181,12 @@ if (!isuser) {
             alert(docRef.id)
 
           } catch (e) {
+
             console.error("Error adding document: ", e);
           }
 }else{
     alert("the normal use already exist")
-    setmessage("the  user already exist  ")
+    setmessage("the  user already exist  plz sign in   ")
 
 const query = new URLSearchParams(userdata).toString();
 console.log(query,"isythebequiertyy")
@@ -177,8 +207,8 @@ router.push(`/signin?${query}`);
   }
 
   useEffect(() => {
-    console.log(userdata, "userdata updated");
-  }, [userdata]);
+    console.log(message, "messshgae updated");
+  }, [message]);
 
 
 
@@ -265,6 +295,9 @@ router.push(`/signin?${query}`);
         />
 
         {/* Checkbox for Hospital */}
+     {message&&    <Typography  color="red" variant="caption" component={"p"}>
+{message}
+         </Typography>}
         <FormControlLabel
           control={
             <Checkbox
@@ -305,6 +338,20 @@ onClick={handlesubmit}
         >
           Sign Up
         </Button>
+        
+      <Box display={"flex"} mt={2}>
+           <Typography component={"caption"}  variant="caption" display={"inline"}   color="primary">
+              you already have an account 
+     
+
+           </Typography>
+           <Link href={"/signin"}>
+
+     <Typography component={"p"} color="Darkblue" ml={2}  fontSize={"small"}>
+        Sign in  
+     </Typography>
+        </Link>
+      </Box>
       </Paper>
     </Box>
   );
