@@ -121,7 +121,7 @@ useEffect(() => {
   {user&&
   navitems.current?.map(({name,href},ind)=>{
 return(
-    <Link href={href}>
+    <Link key={ind} href={href}>
         <Chip  color={'primary'}  variant={ind==hovernavindex?"filled":"outlined"}  onMouseEnter={()=>{
           sethovernavindex(ind)
         }}   onMouseLeave={()=>sethovernavindex(null)} label={name +ind} />

@@ -10,4 +10,14 @@ async  function getallpatietarray(contract,hospitalname) {
     
 }
 
-export {getallpatietarray}
+  async  function filterfromallpatients(data,search) {
+
+if (data.length>0) {
+    let  filterdata=data.filter(el=>el.name==search)
+return filterdata
+}
+}
+
+export {getallpatietarray,filterfromallpatients}
+
+
