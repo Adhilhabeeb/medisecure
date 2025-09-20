@@ -1,10 +1,13 @@
 "use client";
 
-import Image from "next/image";
-import styles from "./page.module.css";
-import Link from "next/link";
+// import Image from "next/image";
+// import styles from "./page.module.css";
+// import Link from "next/link";
 import { useEffect, useState } from "react";
-
+ import  Individialpage from "@/Componenets/individialpage"
+ import Hospitalmainpage from "@/Componenets/Hospital/hospitalmainpage"
+ import Usermain from "@/Componenets/userpage/Usermain"
+import Checkuseronlocalstorage from "@/Componenets/userexist"
 type usertype = {
   contactnum: string;
   email: string;
@@ -15,8 +18,10 @@ type usertype = {
   password: string;
 };
 export default function Home() {
-  const [userdetails, setuserdetails] = useState<null | usertype>();
+  const [userdetails, setuserdetails] = useState<null | usertype>(null);
+  const [loading, setloading] = useState(true)
   useEffect(() => {
+
     let storge: string | undefined =
       localStorage.getItem("medisecureuser") ?? undefined;
     if (storge) {
@@ -24,16 +29,50 @@ export default function Home() {
       console.log(parsedusr);
       setuserdetails(parsedusr);
     }
-  }, []);
+    setloading(false)
+  },[]);
+
+
+
+  if (loading) {
+    return <>
+    <h1>loading</h1></>
+  }
+
 
   return (
-    <>
-      <Link href={"/signup"}>signup</Link>
-      {userdetails?.ishospital?<h1>
-       hospital user 
-      </h1>:<h1>
-      normal usert  {userdetails?.name} </h1>}
+<>
+   
+{!loading&& userdetails?
+<>
+      
+      {userdetails?.ishospital?<>
+
+<Hospitalmainpage/>
+
+      </>:
+      
+<> 
+ <Usermain/>
+  </ >
+      
+     
+       
+       }
+
       {}
     </>
+:<>
+<Individialpage/>
+
+
+ </>}
+
+
+
+</>
+
+    
+
   );
 }

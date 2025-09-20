@@ -124,7 +124,7 @@ router.push(`/signin`);
 
           } catch (e) {
             
-            console.error("Error adding document: ", e);
+            console.error("Error adding document: ", e.reason);
           }
   }else{
 
@@ -225,13 +225,15 @@ router.push(`/signin?${query}`);
 //     // const contract = new ethers.Contract(contractAddress, contractABI, signer);
     const contract = new ethers.Contract(contract2, contractABI2, signer);
     setcontract(contract)
+    return contract
     } catch (error) {
         console.error(error,"isnytyheb  erroror  of contract ")
     }
      
  
     }
-    makecontract()
+     makecontract()
+
   }, [])
   
   return (
