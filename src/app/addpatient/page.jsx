@@ -6,6 +6,7 @@ import React, { useEffect, useState, useTransition } from 'react'
 import DoneIcon from '@mui/icons-material/Done';
   import { z } from 'zod';
 import { redirect, useSearchParams } from 'next/navigation';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 
 function page() {
@@ -100,18 +101,24 @@ if (contract) {
 console.log(addpatient,"is the addpatiet return ")
 if (addpatient.gasPrice) {
 
+console.log("workled")
+seterror(null)
   setsuccess(true)
-    const currentParams = new URLSearchParams(saerchparas);
-    currentParams.set("load",true)
-  setTimeout(() => {
 
-    redirect(`/?${currentParams.toString()}`)
-  }, 1000);
+setTimeout(() => {
+  redirect("/?load=true")
+}, 1000);
+
 }
     
   } catch (error) {
+
+   if (!isRedirectError(error)) {
   seterror("payment cancelled")
-    console.log("addpatieterror",error.reason)
+      
+      }
+  setsuccess(false)
+    console.log("addpatieterror",error)
   }
   
 }

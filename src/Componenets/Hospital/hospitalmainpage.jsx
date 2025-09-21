@@ -46,7 +46,7 @@ function Hospitalmainpage() {
   const [Allpatients, setAllpatients] = useState([]);
   const [contract, setcontract] = useState(null);
   const [search, setsearch] = useState("");
-
+let load=searchparams.get("load")
   useEffect(() => {
     let user = localStorage.getItem("medisecureuser");
 
@@ -63,6 +63,17 @@ function Hospitalmainpage() {
       localStorage.removeItem("mycontract");
     };
   }, []);
+
+
+if (load) {
+  console.log("loadonddddddd")
+   async function name(params) {
+    let data= await getallpatients()
+    if (!data.length>0)  return;
+    setAllpatients(data)
+   }
+   name()
+}
 
   async function getallpatients() {
     let user = localStorage.getItem("medisecureuser");

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
  import Hospitalmainpage from "@/Componenets/Hospital/hospitalmainpage"
  import Usermain from "@/Componenets/userpage/Usermain"
 import Checkuseronlocalstorage from "@/Componenets/userexist"
+import { useSearchParams } from "next/navigation";
 type usertype = {
   contactnum: string;
   email: string;
@@ -18,6 +19,8 @@ type usertype = {
   password: string;
 };
 export default function Home() {
+  let searchparams=useSearchParams()
+
   const [userdetails, setuserdetails] = useState<null | usertype>(null);
   const [loading, setloading] = useState(true)
   useEffect(() => {
