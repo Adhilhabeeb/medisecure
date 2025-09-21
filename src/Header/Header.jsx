@@ -2,6 +2,7 @@
 import { Avatar, Box, Button, Chip, Drawer, Paper, Stack, Typography } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import AppBar from '@mui/material/AppBar';
+import ReactDOM from "react-dom";
 
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
@@ -104,7 +105,7 @@ useEffect(() => {
 
      
 {/* Laptop-laregmoinite  */}
-<Box width={"90%"} height={{md:"50px"} }     bgcolor={"transparent"}   margin={" 0 auto"} mt={1}  borderRadius={"9px"} boxShadow={"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }  display={{md:"flex"}} >
+<Box width={"90%"} height={{md:"50px"} }     bgcolor={"transparent"}   margin={" 0 auto"} mt={1}  borderRadius={"9px"} boxShadow={"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" } zIndex={2000} display={{md:"flex"}} >
     <Stack flexGrow={1} alignItems={"center"} justifyContent={"center"} >
         <Typography variant='p' textAlign={"center"}  component={"h3"}>
 
@@ -132,54 +133,68 @@ return(
 }
 
 </Stack>
- <Stack  flexGrow={1}  alignItems={"center"} justifyContent={"center"} >
-
-   {user?
-   <> 
-
-    <Avatar   onClick={()=>setopenprofile(!openprofile)}  sx={{ bgcolor: deepOrange[500],width:40,height:40 }}>{user?.name[0]?? "?"}</Avatar>
 
 
+<Stack flexGrow={1} alignItems={"center"} justifyContent={"center"}>
+  {user ? (
+    <>
+      <Avatar
+        onClick={() => setopenprofile(!openprofile)}
+        sx={{ bgcolor: deepOrange[500], width: 40, height: 40 }}
+      >
+        {user?.name[0] ?? "?"}
+      </Avatar>
 
-          { <Box   width={drawerWidth} display={openprofile?"block":"none"} boxShadow={" rgba(99, 99, 99, 0.2) 0px 2px 8px 0px"}    sx={{ textAlign: 'center',
-            position:"absolute",transition:5,
-            top:"9%",right:"5%"
-           }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-      Hi,{user.name}
-      </Typography>
-      <Divider />
+      {openprofile &&
+        ReactDOM.createPortal(
+          <Box
+            width={drawerWidth}
+            boxShadow={"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px"}
+            sx={{
+              textAlign: "center",
+              position: "fixed",
+              top: "9%",
+              right: "5%",
+              zIndex: 2000,
+              bgcolor: "white",
+              borderRadius: 2,
+              minWidth: 200,
+            }}
+          >
+            <Typography variant="h6" sx={{ my: 2 }}>
+              Hi, {user.name}
+            </Typography>
+            <Divider />
+            <List>
+              <ListItem onClick={() => redirect("/Profile")}>
+                <ListItemButton sx={{ textAlign: "center" }}>
+                  <ListItemText primary="Go to Profile" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={handlesignout}
+              >
+                <ListItemButton sx={{ textAlign: "center" }}>
+                  <ListItemText primary="Signout" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Box>,
+          document.body // 👈 renders outside your layout
+        )}
+    </>
+  ) : (
+    <Link href={"/signin"}>
+      <Button variant="contained">sign in</Button>
+    </Link>
+  )}
+</Stack>
 
-
-      <List>
-       
-     
-          
-           <ListItem  onClick={()=>{
-            redirect("/Profile")
-           }} >
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={"go to  profile"} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem   sx={{display:"flex",justifyContent:"center",alignItems:"center"}} onClick={handlesignout} >
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={"Signout"} />
-            </ListItemButton>
-            {/* <Button >Signout</Button> */}
-          </ListItem>
-     
-      </List>
-    </Box>}
-      
-
-   </>
-
-
-
-        :<Link href={"/signin"}><Button  variant="contained"   >  sign in</Button>
-</Link>}
-    </Stack>
 </Box>
 
 
