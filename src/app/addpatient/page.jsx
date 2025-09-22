@@ -114,7 +114,8 @@ setTimeout(() => {
   } catch (error) {
 
    if (!isRedirectError(error)) {
-  seterror("payment cancelled")
+    
+  seterror(  "payment cancelled")
       
       }
   setsuccess(false)
