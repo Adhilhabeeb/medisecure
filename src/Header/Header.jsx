@@ -185,7 +185,7 @@ return(
               </ListItem>
             </List>
           </Box>,
-          document.body // 👈 renders outside your layout
+          document.body
         )}
     </>
   ) : (

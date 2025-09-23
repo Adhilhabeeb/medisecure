@@ -1,5 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
+import {makecontract} from "../../walletconnect/Contract"
+
 import {
   Box,
   Card,
@@ -15,10 +17,13 @@ import {
   ImageListItem,
   ImageList,
   ImageListItemBar,
+  Chip,
 } from "@mui/material";
-
+ import {imagetopinata} from "@/Componenets/Hospital/convertimagetostring"
 import React, { useEffect, useRef, useState } from "react";
 import { AddCircle, Delete, Image, ShoppingBag } from "@mui/icons-material";
+import { contract2 } from "../../Abi/contracts";
+import { getallpatients } from "@/Componenets/Hospital/getallpatientarray";
 // string memory medicine,string memory imagedatastr,string memory  hospitalname,string memory name,string memory doctername,string memory docterspecilist
 function Addreportpage() {
   let searchparams = useSearchParams();
@@ -47,7 +52,64 @@ function Addreportpage() {
   }
    async function  handlesubmit (){
 
+let contract=await makecontract()
+ if (contract) {
+  console.log(contract,"ois the contract")
+let patietsaray=await getallpatients()
+console.log(patietsaray,"Andn",patietsaray.find((el)=>el.name==patient.name))
+if (!patietsaray.find((el)=>el.name==patient.name)) {
+//patinet  not found   by the username
+return;
+}
+
+try {
+  
+  let datatopass={
+    ...patient
+  }
+
+  
+   let  data =await imagetopinata(patient.imagepaths) 
+datatopass.imagepaths=JSON.stringify(data)
+datatopass.medicines=JSON.stringify(datatopass.medicines)
+  console.log(JSON.parse(datatopass.imagepaths),"i ythe  imgpathjhhh",datatopass.medicines)
+  let addreport= await contract.addreports(datatopass.medicines,datatopass.imagepaths,datatopass.hospitalname,datatopass.name,datatopass.doctername,datatopass.docterspecilist)
+
+console.log(addreport,"is the addreporyt  aftetef")
+
+} catch (error) {
+  
+}
+
+
+
+
+// console.log(patietsaray,"is the paytie",patietsaray.find((el)=>el.name==patient.name))
+  
+ }
+  
+
    }
+
+
+
+ async function getreports(params) {
+
+let contract=await makecontract()
+try {
+    
+let reports= await contract.getreports("amritha","sup79")
+
+console.log(reports.length,"is the ropporyfs s from getreportfunctuin")
+if (reports.length>0) {
+console.log(JSON.parse(reports[0][3])[0],"is the reports in get f")
+  
+}
+} catch (error) {
+  console.log(error,"in getrepirtr")
+}
+}
+
    function handleinputchange(e) {
     setpatient((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
@@ -80,6 +142,7 @@ if (e.target.files[0]) {
       pt={5}
       boxSizing={"border-box"}
     >
+      
       <Card
         sx={{
           width: "30%",
@@ -201,7 +264,11 @@ console.log(arrayremoved,"si the sarayrenived")
   }
 })
 
-           }}
+
+
+    
+
+}}
                
               >
                 <Delete sx={{color:"red"}} />
@@ -242,6 +309,32 @@ handleaddmedicines(impu.value)
 </IconButton>
             </Box>
 
+<Box>
+{ patient.medicines.length >0 && <>
+{patient.medicines.map((el,ind)=>{
+
+  return (<> 
+  
+  <Chip  label={el} onDelete={()=>{
+    let index=patient.medicines.indexOf(el)
+console.log(el,"is el",index,"is the index")
+let arrayremoved=patient.medicines.filter(me=>me!=el)
+console.log(arrayremoved,"si the sarayrenived")
+setpatient((prev)=>{
+  return{...prev,
+  medicines:arrayremoved
+  }
+})
+  }}/>
+ 
+
+   </>)
+})}
+</>}
+</Box>
+
+
+
           </Stack>
         </CardContent>
         <CardActions>
@@ -255,6 +348,9 @@ handleaddmedicines(impu.value)
             Submit
           </Button>
         </CardActions>
+        <Button onClick={getreports}>
+          getreports
+        </Button>
       </Card>
     </Box>
   );
