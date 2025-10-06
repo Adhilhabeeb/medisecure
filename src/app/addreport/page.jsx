@@ -1,7 +1,12 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import {makecontract} from "../../walletconnect/Contract"
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+  import {getreports} from "@/Componenets/getreports"
+import {doctors} from "@/utils/docters"
 import {
   Box,
   Card,
@@ -21,16 +26,91 @@ import {
 } from "@mui/material";
  import {imagetopinata} from "@/Componenets/Hospital/convertimagetostring"
 import React, { useEffect, useRef, useState } from "react";
-import { AddCircle, Delete, Image, ShoppingBag } from "@mui/icons-material";
+import { AddCircle, Delete, DoneAll, Image, ShoppingBag } from "@mui/icons-material";
 import { contract2 } from "../../Abi/contracts";
 import { getallpatients } from "@/Componenets/Hospital/getallpatientarray";
+import z from "zod";
 // string memory medicine,string memory imagedatastr,string memory  hospitalname,string memory name,string memory doctername,string memory docterspecilist
 function Addreportpage() {
+const [sucess, setsucess] = useState(false)
+  const [error, seterror] = useState(null)
+   const [docterspecialist, setdocterspecialist] = React.useState('');
+   const handleChange = (event) => {
+    console.log(event.target.value,"is s  s sythe docternsamer")
+    // setdo(event.target.value);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const [open, setOpen] = React.useState(false);
+    const myRegex = /^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]+$/;
+
+   let schemareport =z.object({
+        name:z.string().regex(myRegex,{message:'username must contain only alphanumeric characters.'}),
+        doctername:z.string().min(3,{message:"enter the doctername "}),
+        docterspecilist:z.string().min(2,{message:"enter a  valid docterspecialist"}),
+        hospitalname:z.string(),
+        medicines:z.string({message:"the medicines array error"}),
+        imagepaths:z.string({message:"the imag array error"})
+
+      })
+      function checkpatientfor(data){
+
+  let datas={name:data.name.toLowerCase(),
+    hospitalname:data.hospitalname,
+    doctername: data.doctername,
+    docterspecilist:data.docterspecilist,
+    medicines:data.medicines,
+    imagepaths:data.imagepaths
+  }
+
+      let vv=schemareport.safeParse(datas)
+      console.log(vv,"si the vvvvv")
+if (vv.success) {
+ 
+  seterror(null)
+  return vv.data
+}
+if (vv.error) {
+ 
+  console.log(vv.error.issues[0].message,"s the reror messga")
+  seterror(vv.error.issues[0].message)
+  return null
+}
+    // Valid input
+    // const validResult = usernameschema.safeParse('hello123');
+    // console.log(validResult.success); // true
+
+    // // Invalid input
+    // const invalidResult = usernameschema.safeParse('hello!');
+    // console.log(invalidResult.success); // false
+    // if (!invalidResult.success) {
+    //   console.log(invalidResult.error.issues[0].message); // Input must contain only alphanumeric characters.
+    // }
+//     let vv=schemapatinet.safeParse(datas)
+// if (vv.success) {
+//   seterror(null)
+//   return vv.data
+// }
+// if (vv.error) {
+//   console.log(vv.error.issues[0].message)
+//   seterror(vv.error.issues[0].message)
+//   return null
+// }
+}
   let searchparams = useSearchParams();
   let medicinetextfield=useRef(null)
-  let params = searchparams.get("uname") ?? "";
+
+  let params = searchparams.get("uname").toString() ?? "";
+  console.log(params,"si params")
   const [patient, setpatient] = useState({
-    name: "",
+    name: params ,
     hospitalname: JSON.parse(localStorage.getItem("medisecureuser")).name,
     doctername: "",
     docterspecilist:"",
@@ -54,10 +134,12 @@ function Addreportpage() {
 
 let contract=await makecontract()
  if (contract) {
+
   console.log(contract,"ois the contract")
 let patietsaray=await getallpatients()
 console.log(patietsaray,"Andn",patietsaray.find((el)=>el.name==patient.name))
 if (!patietsaray.find((el)=>el.name==patient.name)) {
+seterror("plz enter a  valid user name")
 //patinet  not found   by the username
 return;
 }
@@ -69,16 +151,29 @@ try {
   }
 
   
+
    let  data =await imagetopinata(patient.imagepaths) 
 datatopass.imagepaths=JSON.stringify(data)
 datatopass.medicines=JSON.stringify(datatopass.medicines)
   console.log(JSON.parse(datatopass.imagepaths),"i ythe  imgpathjhhh",datatopass.medicines)
+  let dataparsed= checkpatientfor(datatopass)
+  if(!dataparsed) return ;
+  console.log("is the datapareded",JSON.parse(dataparsed.medicines),error)
   let addreport= await contract.addreports(datatopass.medicines,datatopass.imagepaths,datatopass.hospitalname,datatopass.name,datatopass.doctername,datatopass.docterspecilist)
+ if (addreport.gasPrice) {
+  console.log(addreport,"is the rpeot sucess")
+setsucess(" transaction complete")
+seterror(null)
+return;
+ }
 
 console.log(addreport,"is the addreporyt  aftetef")
 
 } catch (error) {
-  
+
+ setsucess(false)
+ seterror("transaction failed")
+  console.log(error.reason,"is errorooroor")
 }
 
 
@@ -93,22 +188,6 @@ console.log(addreport,"is the addreporyt  aftetef")
 
 
 
- async function getreports(params) {
-
-let contract=await makecontract()
-try {
-    
-let reports= await contract.getreports("amritha","sup79")
-
-console.log(reports.length,"is the ropporyfs s from getreportfunctuin")
-if (reports.length>0) {
-console.log(JSON.parse(reports[0][3])[0],"is the reports in get f")
-  
-}
-} catch (error) {
-  console.log(error,"in getrepirtr")
-}
-}
 
    function handleinputchange(e) {
     setpatient((prev) => {
@@ -134,6 +213,19 @@ if (e.target.files[0]) {
   console.log(patient,"is ythe patiemnt ")
   }, [patient])
   
+  useEffect(() => {
+ console.log(patient.doctername,"is chaged docnsme")
+setpatient((prev=>({...prev,docterspecilist:""})))
+
+ if (patient.doctername.trim()=="") return;
+let docterspecialist =doctors.find(el=>el.name==patient.doctername)
+console.log(docterspecialist,"is gfilyter docte speculkait")
+if ("name" in docterspecialist) {
+setpatient((prev=>({...prev,docterspecilist:docterspecialist.specialization})))
+  
+}
+}, [patient.doctername])
+
   return (
     <Box
       display={"flex"}
@@ -142,7 +234,7 @@ if (e.target.files[0]) {
       pt={5}
       boxSizing={"border-box"}
     >
-      
+
       <Card
         sx={{
           width: "30%",
@@ -164,13 +256,21 @@ if (e.target.files[0]) {
           }
         />
         <CardContent>
+                
+    
+       {sucess&&<Typography  textAlign={"center"}  color='green' variant="caption" >
+        <DoneAll fontSize="small"/> sucess
+           </Typography>}
+         {error&&  <Typography color='red' variant="caption" >
+             {error}
+           </Typography>}
           {/* {success&&<Typography  textAlign={"center"}  color='green' variant="caption" >
      <DoneIcon fontSize="small"/> sucess
         </Typography>}
       {error&&  <Typography color='red' variant="caption" >
           {error}
-        </Typography>} */}
-          <Stack
+        </Typography> } */}
+          <Stack  marginTop={2}
             maxWidth={"80%"}
             direction={"column"}
             margin={"0 auto"}
@@ -182,6 +282,7 @@ if (e.target.files[0]) {
               id="standard-password-input"
               label="username"
               type="text"
+              defaultValue={params}
               name="name"
               variant="standard"
             />
@@ -200,7 +301,7 @@ if (e.target.files[0]) {
                 },
               }}
             />
-              <TextField
+              {/* <TextField
               fullWidth
               onChange={(e) => handleinputchange(e)}
               id="standard-password-input"
@@ -209,13 +310,38 @@ if (e.target.files[0]) {
               type="text"
               name="doctername"
               variant="standard"
-            />
+            /> */}
+           <FormControl sx={{border:"none"}} size="small">
+      <InputLabel  id="demo-select-small-label">Docter name</InputLabel>
+      <Select
+        labelId="demo-select-small-label"
+        onChange={(e) => handleinputchange(e)}
+        id="demo-select-small"
+        value={patient.doctername}
+      fullWidth
+      name="doctername"
+        label="doctername"
+     
+      >
+        <MenuItem value="">
+          <em>None</em>
+        </MenuItem>
+        
+      {doctors.map((el,ind)=>{
+        return  <MenuItem  key={ind} value={el.name}>
+          <em>{el.name}</em>
+        </MenuItem>
+      })}
+      </Select>
+    </FormControl>
                  <TextField
               fullWidth
               onChange={(e) => handleinputchange(e)}
               id="standard-password-input"
-              label="docterspecilist"
-              placeholder="enter the docterspecilist for"
+              // label="docterspecilist"
+           
+              value={patient.docterspecilist}
+              // placeholder="enter the docterspecilist for"
               type="text"
               name="docterspecilist"
               variant="standard"
@@ -348,7 +474,7 @@ setpatient((prev)=>{
             Submit
           </Button>
         </CardActions>
-        <Button onClick={getreports}>
+        <Button onClick={getreports.bind(null,params)}>
           getreports
         </Button>
       </Card>
