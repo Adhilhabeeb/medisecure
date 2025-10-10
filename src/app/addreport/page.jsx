@@ -107,10 +107,10 @@ if (vv.error) {
   let searchparams = useSearchParams();
   let medicinetextfield=useRef(null)
 
-  let params = searchparams.get("uname").toString() ?? "";
+  let params = searchparams.get("uname") ?? " ";
   console.log(params,"si params")
   const [patient, setpatient] = useState({
-    name: params ,
+    name: params.toString() ,
     hospitalname: JSON.parse(localStorage.getItem("medisecureuser")).name,
     doctername: "",
     docterspecilist:"",

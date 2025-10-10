@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Usermain() {
+function Usermain( {}) {
   return (
     <div>Usermain</div>
   )

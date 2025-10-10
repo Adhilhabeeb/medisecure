@@ -3,27 +3,21 @@
 // import Image from "next/image";
 // import styles from "./page.module.css";
 // import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
  import  Individialpage from "@/Componenets/individialpage"
  import Hospitalmainpage from "@/Componenets/Hospital/hospitalmainpage"
  import Usermain from "@/Componenets/userpage/Usermain"
 import Checkuseronlocalstorage from "@/Componenets/userexist"
 import { useSearchParams } from "next/navigation";
-type usertype = {
-  contactnum: string;
-  email: string;
-  hospitalname: string;
-  id: string;
-  ishospital: boolean;
-  name: string;
-  password: string;
-};
+       type usertype = Record<string, string>
+
+
 export default function Home() {
   let searchparams=useSearchParams()
 
   const [userdetails, setuserdetails] = useState<null | usertype>(null);
   const [loading, setloading] = useState(true)
-  useEffect(() => {
+  useLayoutEffect(() => {
 
     let storge: string | undefined =
       localStorage.getItem("medisecureuser") ?? undefined;
@@ -56,7 +50,7 @@ export default function Home() {
       </>:
       
 <> 
- <Usermain/>
+ <Usermain />
   </ >
       
      
@@ -79,3 +73,6 @@ export default function Home() {
 
   );
 }
+
+
+export type {usertype}

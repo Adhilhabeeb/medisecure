@@ -3,15 +3,15 @@ let hosptialnavitem=[
     {name:"AddPatient",href:"addpatient"},
     {    name:"Addreport",href:"addreport" },
    
-
+{name:"MyProfile",href:"myprofile"}
 
 ]
 
 let usernavitems=[
     {    name:"Home",href:"/" },
     
-    {    name:"ViewReport",href:"ViewReport" },
-{name:"MyProfile",href:"/MyProfile"}
+    {    name:"ViewReport",href:"viewreport" },
+{name:"MyProfile",href:"myprofile"}
 
 
 ]

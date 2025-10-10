@@ -225,9 +225,9 @@ if (load) {
             overflow: "auto",
           }}
         >
-          {Allpatients?.map((patient) => (
+          {Allpatients?.map((patient,ind) => (
             <>
-              <Grid container padding={"1em"}>
+              <Grid key={ind} container padding={"1em"}>
                 <Grid size={{ xs: 12, md: 8 }}>
                   <Box
                     boxSizing={"border-box"}

@@ -90,8 +90,10 @@ return  el.email==userdata.email
 
 console.log(isuser,"and the userano",userdata.email)
 if (hospitalarray.length>0 || isuser) {
+
  alert("user already exist use any other usr nsme   ")
 setmessage("user already exist try any othername or include symbals  ")
+
 // redirect("/signin")
 
 
@@ -167,7 +169,7 @@ return  el.email==userdata.email
 
 
 if (!isuser) {
-    alert(userdata.ishospital)
+    // alert(userdata.ishospital)
     try {
             const docRef = await addDoc(collection(db, "medidatabase"), {
                 name:userdata.name,
@@ -180,6 +182,9 @@ if (!isuser) {
             console.log("Document written with ID: ", docRef.id);
             alert(docRef.id)
 
+const query = new URLSearchParams(userdata).toString();
+console.log(query,"isythebequiertyy")
+router.push(`/signin?${query}`);
           } catch (e) {
 
             console.error("Error adding document: ", e);
