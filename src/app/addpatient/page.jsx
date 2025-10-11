@@ -9,6 +9,7 @@ import { redirect, useSearchParams } from 'next/navigation';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 
+
 function page() {
   let saerchparas=useSearchParams()
   let bloodarra= [
@@ -106,7 +107,9 @@ seterror(null)
   setsuccess(true)
 
 setTimeout(() => {
+
   redirect("/?load=true")
+  
 }, 1000);
 
 }

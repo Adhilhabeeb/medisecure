@@ -474,7 +474,7 @@ setpatient((prev)=>{
             Submit
           </Button>
         </CardActions>
-        <Button onClick={getreports.bind(null,params)}>
+        <Button onClick={getreports.bind(null,patient)}>
           getreports
         </Button>
       </Card>

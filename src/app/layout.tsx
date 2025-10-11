@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/Header/Header"
+
 import {Authpassing} from "@/Componenets/Authpassing"
+import { CssBaseline, StyledEngineProvider } from "@mui/material";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,18 +26,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+  
+     
          <Authpassing >
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+ 
     <>
     
     <Header/>
     </>
   
         {children}
-      
+    
       </body>
     </html>
     </Authpassing>
+ 
   );
 }

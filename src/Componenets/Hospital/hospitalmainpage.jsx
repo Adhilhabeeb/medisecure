@@ -47,9 +47,31 @@ function Hospitalmainpage() {
   const [contract, setcontract] = useState(null);
   const [search, setsearch] = useState("");
 let load=searchparams.get("load")
+
+
+
   useEffect(() => {
     let user = localStorage.getItem("medisecureuser");
+if (load) {
+     async function name(params) {
+    let data= await getallpatients()
+    if (!data.length>0)  return;
+console.log("called the  ",data)
+    setAllpatients(data)
+   }
+   name()
+}
 
+
+setTimeout(() => {
+    async function name(params) {
+    let data= await getallpatients()
+    if (!data.length>0)  return;
+console.log("called the  ",data)
+    setAllpatients(data)
+   }
+   name()
+}, 4000);
     async function fetcontct(params) {
       let allpatients = await getallpatients();
       if (allpatients.length > 0) {
@@ -65,15 +87,16 @@ let load=searchparams.get("load")
   }, []);
 
 
-if (load) {
-  console.log("loadonddddddd")
-   async function name(params) {
-    let data= await getallpatients()
-    if (!data.length>0)  return;
-    setAllpatients(data)
-   }
-   name()
-}
+
+// if (load) {
+ 
+//    async function name(params) {
+//     let data= await getallpatients()
+//     if (!data.length>0)  return;
+//     setAllpatients(data)
+//    }
+//    name()
+// }
 
   async function getallpatients() {
     let user = localStorage.getItem("medisecureuser");
@@ -88,7 +111,11 @@ if (load) {
         const Allpatientsar = await cont.getallpatientsinhospital(
           hospitaldetails.name
         );
-        if (Allpatientsar && !Error.isError(Allpatientsar)) {
+           console.log(Allpatientsar,"is allpatinets ")
+
+        if (Allpatientsar && !Error.isError(Allpatientsar)) 
+         {
+       
           let gg = Allpatientsar.map((r, i) => ({
             name: r.name,
             age: r.age,
@@ -100,6 +127,7 @@ if (load) {
       } catch (error) {
         //endftechiung
         seterror(error.reason);
+        setfetching(false)
         console.log(error, "is the error in getallpatients ", error.reason);
         return [];
       }
@@ -160,10 +188,7 @@ if (load) {
     get();
   }, [search]);
 
-  if (error) {
-    return <h1> {error}</h1>;
-  }
-
+  
   return (
     <Box
       textAlign={"start"}
@@ -194,6 +219,7 @@ if (load) {
           search{" "}
         </Button>
       </Box>
+      
       {fetching ? (
         <>
           <Container
@@ -206,7 +232,7 @@ if (load) {
             }}
           >
             <Button loading variant="outlined">
-              Loading...
+           { "Loading..."  } 
             </Button>
           </Container>
         </>
@@ -225,6 +251,10 @@ if (load) {
             overflow: "auto",
           }}
         >
+          {!fetching && error &&  <Button sx={{display:"block",margin:"0 auto"}}>
+      sorry  You have no patients
+            </Button>}
+           
           {Allpatients?.map((patient,ind) => (
             <>
               <Grid key={ind} container padding={"1em"}>

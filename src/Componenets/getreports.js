@@ -1,12 +1,12 @@
 import {makecontract} from "../walletconnect/Contract"
  
- async function getreports(name) {
-  console.log(name,"is the passedname")
+ async function getreports(patient) {
+  console.log(patient.name,"is the passedname", patient.hospitalname)
 
 let contract=await makecontract()
 try {
     
-let reports= await contract.getreports("amritha",name)
+let reports= await contract.getreports(  patient.hospitalname ,patient.name)
 
 console.log(reports,"is the ropporyfs s from getreportfunctuin")
 if (reports.length>0) {

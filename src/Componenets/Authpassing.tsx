@@ -37,8 +37,9 @@ function Authpassing({children}:Readonly<{
       console.log(parsedusr,"sitttttttstrrrrr");
       setuserdetails(parsedusr);
     }else{
- if (pathname!="/") {
-  router.push("/signin")
+      console.log("storage not found")
+ if (pathname!="/" && pathname!="signup") {
+  // router.push("/signin")
  }
     }
     setloading(false)
@@ -53,8 +54,15 @@ function Authpassing({children}:Readonly<{
       console.log(parsedusr,"sitttttttstrrrrr");
       setuserdetails(parsedusr);
     }else{
- if (pathname!="/") {
+      console.log("storage not found")
+
+ if (pathname!="/"  && pathname!="/signup") {
+
+  
   router.push("/signin")
+ }else{
+
+  console.log('signiuporr home')
  }
     }
     setloading(false)
