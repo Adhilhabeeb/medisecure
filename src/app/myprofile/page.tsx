@@ -1,57 +1,126 @@
 "use client"
-import { Authcontext, authuser } from '@/Componenets/Authpassing'
-import React, { cache, Suspense, useContext, useEffect, useState } from 'react'
-import { usertype } from '../page'
-import { notFound } from 'next/navigation'
-import { Button, Typography } from '@mui/material'
+import { Authcontext } from '@/Componenets/Authpassing'
+import React, {  useContext, useEffect, useState, useTransition ,useRef} from 'react'
+
+import { Button, Typography,Box,CircularProgress } from '@mui/material'
 import { makecontract } from '@/walletconnect/Contract'
 import { Contract } from 'ethers'
  import {
-   query,
-   collection,
-   onSnapshot,
+  
    DocumentData,
  } from "firebase/firestore";
-import { db } from '@/firebase'
+
 
        function Myprofile() {
+ let context=useContext(Authcontext)
+  
+ let [hospitalworkingloading,starthospitalworking]=useTransition()
         const [FetchedUsers, setFetchedUsers] = useState<DocumentData[]>([])
         const [hospitalwoking, sethospitalwoking] = useState(false)
 const [mycontract, setmycontract] = useState <Contract|null >(null)
- let context=useContext(Authcontext)
+
+
+useEffect(() => {
+
+    console.log(context,"in useefect",mycontract)
+    
+       async   function checkhositawoeking() {
+            if (context?.userdetails && mycontract) {
+          let woeking= await mycontract.Hospitalscurrentworking(context?.userdetails.name);
+ sethospitalwoking(woeking)
+          console.log(woeking,"wooolllll")
+        } 
+    }
+        
+      starthospitalworking(checkhositawoeking)
+    
+}, [context,mycontract])
+
+let [loading,startloading]=useTransition()
+
+  const isMounted = useRef(false);
+
+
 
  useEffect(() => {
-
+    
+   // This effect runs on every render, including the first.
+    // We want to skip the first render for certain actions.
+   
      async  function fetch() {
         let contract= await makecontract()
       if (!contract) {
         return;
       }
+
         setmycontract(contract)
-    
+
    
   }
-    
+    startloading(fetch)
+
            
 
-    fetch()
    
  }, [])
  
 
 
- useEffect(() => {
-    console.log(mycontract,"s s conttractt",context?.userdetails)
+
   async function checkfu(){
-if (!mycontract ||!context?.userdetails) {
-  return;  
+    console.log(mycontract,context?.userdetails ,loading,"itahnn")
+if (!mycontract ||!context?.userdetails || loading) {
+  return ;  
 }
-    // const isWorking = await mycontract.Hospitalscurrentworking();
+    const isWorking = await mycontract.Hospitalscurrentworking(context?.userdetails.name);
+
+   if(isWorking){
+
+console.log(" working hospital ",context?.userdetails)
+
+     let transtion=    await mycontract.pausehospital(context?.userdetails.name);
+    if (transtion.gasPrice) {
+sethospitalwoking(false)
+            console.log("paused hospital",transtion
+
+)
+      }
+
+   }else{
+    
+console.log("not working hospital ",context?.userdetails.name,"ande co",mycontract.interface)
+console.log(
+        "Methods in contract:",
+        mycontract.interface.fragments.map((f:any) => f.name)
+      );
+      let transtion=   await mycontract.Addhospital(context?.userdetails.name);
+
+      console.log(transtion)
+      if (transtion.gasPrice) {
+sethospitalwoking(true)
+let woeking= await mycontract.Hospitalscurrentworking(context?.userdetails.name);
+            console.log("resume hospital is woerking:",woeking
+
+)
+      }
+
+
+   }
   }
- }, [hospitalwoking])
- 
+
+
+
+
 if(!context?.userdetails){
-return ; 
+
+return   <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="60vh"
+      >
+        <CircularProgress />
+      </Box>; 
 }
 
 // console.log(context,"coonnnddttext")
@@ -59,6 +128,7 @@ return ;
 
 
 let {userdetails}=context
+
            let entiedarrayuser=Object.entries(userdetails)
            
 entiedarrayuser.forEach(([name,value])=>{
@@ -72,11 +142,12 @@ return ;
           
     return (
       <>
-      {entiedarrayuser.map(([name,value])=>
+     
+      {entiedarrayuser.filter(([name,value])=>name!="ishospital").map(([name,value])=>
       
       {
 
-        if (name=="ishospital") return;
+       
         return   (
 
         <>
@@ -96,7 +167,7 @@ return ;
    
 
    {userdetails.ishospital&&
-        <Button    onClick={()=>sethospitalwoking(!hospitalwoking)}
+        <Button    onClick={checkfu}
           sx={{
             borderColor: "primary.main",
             border: "0.5px solid", // Define border width and style
@@ -108,7 +179,7 @@ return ;
             },
           }}
         >
-          {hospitalwoking ? "Pause Hospital " : "Resume hospital"}
+          {hospitalworkingloading?"loading":hospitalwoking ? `Pause Hospital  ` : `Resume hospital`}
         </Button>}
       </>
     );

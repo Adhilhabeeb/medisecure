@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { createContext, useContext ,useState,useLayoutEffect, useEffect} from 'react'
   export type authuser={
     userdetails:usertype|null;
+    loading?:Boolean
   }
 
 export  const  Authcontext=createContext<authuser |null>(null)
@@ -70,7 +71,7 @@ function Authpassing({children}:Readonly<{
   
   return (
     <>   
-   <Authcontext.Provider value={{userdetails}}>
+   <Authcontext.Provider value={{userdetails,loading}}>
 
 
         {children}

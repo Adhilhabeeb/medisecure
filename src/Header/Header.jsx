@@ -166,7 +166,7 @@ return(
             </Typography>
             <Divider />
             <List>
-              <ListItem onClick={() => redirect("/Profile")}>
+              <ListItem onClick={() => redirect("/myprofile")}>
                 <ListItemButton sx={{ textAlign: "center" }}>
                   <ListItemText primary="Go to Profile" />
                 </ListItemButton>

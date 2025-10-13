@@ -5,8 +5,8 @@ import React, { useContext } from 'react'
 
 function page() {
     
-     let {userdetails}=useContext(Authcontext)
-    console.log(userdetails,"is conn")
+     let {userdetails,loading}=useContext(Authcontext)
+    console.log(userdetails,loading,"is conn")
   return (
     <div>
         viewrepopaget {userdetails?.name}

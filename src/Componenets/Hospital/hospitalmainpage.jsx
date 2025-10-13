@@ -66,12 +66,13 @@ console.log("called the  ",data)
 setTimeout(() => {
     async function name(params) {
     let data= await getallpatients()
+    console.log(data,"is the reurn data in timeout")
     if (!data.length>0)  return;
 console.log("called the  ",data)
     setAllpatients(data)
    }
    name()
-}, 4000);
+}, 7000);
     async function fetcontct(params) {
       let allpatients = await getallpatients();
       if (allpatients.length > 0) {
@@ -99,6 +100,7 @@ console.log("called the  ",data)
 // }
 
   async function getallpatients() {
+  
     let user = localStorage.getItem("medisecureuser");
 
     if (user) {
@@ -143,6 +145,7 @@ console.log("called the  ",data)
   }
 
   async function handlesearch() {
+    seterror(null)
     setfetching(true);
     let data = await getallpatients();
     if (search.trim() == "") {

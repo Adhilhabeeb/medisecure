@@ -3,20 +3,23 @@
   import { useSearchParams } from 'next/navigation'
 
   import {getpatientdetails}  from "@/Componenets/getpatientdetails"
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { startTransition, useEffect, useLayoutEffect, useState, useTransition } from 'react'
+import { Button } from '@mui/material'
   export  default  function (){
-
+let [transition,starttransition]=useTransition()
 let  searchparams=  useSearchParams()
 let name=searchparams.get("uname") ?? ""
 const [patientdetails, setpatientdetails] = useState(null)
 
   async  function getpatinnt(params) {
-    let patinet= await getpatientdetails({name,hospitalname:JSON.parse(localStorage.getItem("medisecureuser")).name})
+starttransition( async ()=>{
+      let patinet= await getpatientdetails({name,hospitalname:JSON.parse(localStorage.getItem("medisecureuser")).name})
     console.log(patinet ,"is psattttt")
     setpatientdetails(patinet)
+})
   }
  useLayoutEffect(() => {
- 
+
 
    getpatinnt()
 
@@ -25,7 +28,10 @@ const [patientdetails, setpatientdetails] = useState(null)
  
     return (
         <>
-        {patientdetails&& 
+{transition&&<>
+   <Button  sx={{margin:"0 auto"}} loading/>
+</>}
+        {!transition&&patientdetails&& 
         
         
         Object.entries(patientdetails).map(([name,value])=>{

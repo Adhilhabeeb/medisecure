@@ -11,6 +11,7 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 
 function page() {
+  const [ishospitalworking, setishospitalworking] = useState(true)
   let saerchparas=useSearchParams()
   let bloodarra= [
   "A+",
@@ -82,8 +83,7 @@ if (vv.error) {
 
 
  async function handlesubmit(params) {
-
-
+seterror(null)
   let datapasresd=checkpatientfor(patient)
   if(!datapasresd){
   return;
@@ -93,9 +93,19 @@ if (vv.error) {
 startTransition(async (
 )=>{
     let {name,bloodgroup,age,hospitalname}=datapasresd
+
   console.log(name,bloodgroup,age,hospitalname,"isiisis")
   let contract=await makecontract()
 if (contract) {
+let woeking= await contract.Hospitalscurrentworking(hospitalname);
+console.log(woeking,"is hospitalwoekinggggggg")
+
+if (!woeking) {
+  seterror("Your are not working now ")
+  setishospitalworking(false)
+  return;
+}
+
   try {
     
     const addpatient = await   contract.addpatient(name,bloodgroup,age,hospitalname)
@@ -133,9 +143,14 @@ setTimeout(() => {
 
 useEffect(() => {
   
-console.log(patient,"is")
-
-}, [patient])
+// console.log(patient,"is")
+//  async function checkhospitalwoeking() {
+//   console.log(JSON.parse(localStorage.getItem("medisecureuser")).name,"is nme from localstor")
+// let woeking= await contract.Hospitalscurrentworking(JSON.parse(localStorage.getItem("medisecureuser")).name);
+// setishospitalworking(woeking)
+// }
+// checkhospitalwoeking()
+}, [])
 
 
 
@@ -203,7 +218,7 @@ Add Patient
 
       </CardContent>
           <CardActions>
-      <Button onClick={handlesubmit} disabled={isPending} variant="contained" sx={{margin:"0 auto"}} size="small">Submit</Button>
+      <Button onClick={handlesubmit} disabled={isPending || !ishospitalworking} variant="contained" sx={{margin:"0 auto"}} size="small">Submit</Button>
     </CardActions>
 </Card>
 

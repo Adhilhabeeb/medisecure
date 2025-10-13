@@ -7,3 +7,5 @@ function Templete({childeren}) {
 }
 
 export default Templete
+
+

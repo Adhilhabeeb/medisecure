@@ -12,7 +12,9 @@ import { ethers } from "ethers";
 
 //     // const contract = new ethers.Contract(contractAddress, contractABI, signer);
     const contract =  new ethers.Contract(contract2, contractABI2, signer);
-// console.log("Methods in contract:", contract.interface.fragments.map(f => f.name));
+   
+    // console.log(contract.functions,"function in contract");
+console.log("Methods in contract:", contract.interface.fragments.map(f => f.name));
 
 return contract;
     } catch (error) {
