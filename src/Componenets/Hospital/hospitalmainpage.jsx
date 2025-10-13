@@ -52,6 +52,7 @@ const [loadfound, setloadfound] = useState(false)
 if (load && !loadfound) {
   
      async function name(params) {
+
     let data= await getallpatients()
     if (!data.length>0)  return;
     setAllpatients(data)
@@ -59,7 +60,11 @@ if (load && !loadfound) {
 
     setloadfound(true)
    }
+
+   setTimeout(() => {
    name()
+    
+   }, 8000);
 }
 
   useEffect(() => {
@@ -68,7 +73,7 @@ if (load) {
      async function name(params) {
     let data= await getallpatients()
     if (!data.length>0)  return;
-console.log("called the  ",data)
+console.log("called the  load ",data)
     setAllpatients(data)
    }
    name()
@@ -78,9 +83,9 @@ console.log("called the  ",data)
 setTimeout(() => {
     async function name(params) {
     let data= await getallpatients()
-    console.log(data,"is the reurn data in timeout")
+    // console.log(data,"is the reurn data in timeout")
     if (!data.length>0)  return;
-console.log("called the  ",data)
+// console.log("called the  ",data)
     setAllpatients(data)
    }
    name()
@@ -88,7 +93,7 @@ console.log("called the  ",data)
     async function fetcontct(params) {
       let allpatients = await getallpatients();
       if (allpatients.length > 0) {
-        console.log(allpatients, "is all patient in gforst load");
+        // console.log(allpatients, "is all patient in gforst load");
         setAllpatients(allpatients);
       }
     }
@@ -116,7 +121,7 @@ console.log("called the  ",data)
         const Allpatientsar = await cont.getallpatientsinhospital(
           hospitaldetails.name
         );
-           console.log(Allpatientsar,"is allpatinets ")
+          //  console.log(Allpatientsar,"is allpatinets ")
 
         if (Allpatientsar && !Error.isError(Allpatientsar)) 
          {
@@ -133,7 +138,7 @@ console.log("called the  ",data)
         //endftechiung
         seterror(error.reason);
         setfetching(false)
-        console.log(error, "is the error in getallpatients ", error.reason);
+        // console.log(error, "is the error in getallpatients ", error.reason);
         return [];
       }
 
@@ -152,7 +157,7 @@ console.log("called the  ",data)
     setfetching(true);
     let data = await getallpatients();
     if (search.trim() == "") {
-      console.log(data, "sthe dataainsearch empty ");
+      // console.log(data, "sthe dataainsearch empty ");
       if (data) {
         setfetching(false);
         setAllpatients(data);
@@ -161,7 +166,7 @@ console.log("called the  ",data)
     }
     let filtereddata = await filterfromallpatients(data, search);
     if (filtereddata.length > 0) {
-      console.log(filtereddata, "isfilterde");
+      // console.log(filtereddata, "isfilterde");
       setfetching(false);
 
       setAllpatients(filtereddata);
@@ -175,7 +180,7 @@ console.log("called the  ",data)
         let data = await getallpatients();
         if (data.length > 0) {
           setfetching(false);
-          console.log(data, "inemptyarr");
+          // console.log(data, "inemptyarr");
           setAllpatients(data);
         }
       } else {

@@ -7,10 +7,11 @@ import DoneIcon from '@mui/icons-material/Done';
   import { z } from 'zod';
 import { redirect, useSearchParams } from 'next/navigation';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
-
+import {Emailsenter} from "@/Componenets/Hospital/mailsent"
 
 
 function page() {
+  const [email, setemail] = useState("")
   const [ishospitalworking, setishospitalworking] = useState(true)
   let saerchparas=useSearchParams()
   let bloodarra= [
@@ -37,7 +38,8 @@ function page() {
       name:z.string().regex(myRegex,{message:'username must contain only alphanumeric characters.'}),
       age:z.string().min(1,{message:"enter the age "}),
       bloodgroup:z.enum(bloodarra,{message:"plzz enter a  valid bloodgroup"}),
-      hospitalname:z.string()
+      hospitalname:z.string(),
+      email:z.email({message:"plz enter a avlid email"})
     })
  const [isPending, startTransition] = useTransition();
   const [success, setsuccess] = useState(false)
@@ -57,7 +59,8 @@ function checkpatientfor(data){
   let datas={name:data.name.toLowerCase(),
     age:data.age,
     bloodgroup:data.bloodgroup.toUpperCase(),
-    hospitalname:data.hospitalname
+    hospitalname:data.hospitalname,
+    email:email
   }
     // Valid input
     // const validResult = usernameschema.safeParse('hello123');
@@ -84,6 +87,11 @@ if (vv.error) {
 
  async function handlesubmit(params) {
 seterror(null)
+
+// Emailsenter()
+
+
+// return ;
   let datapasresd=checkpatientfor(patient)
   if(!datapasresd){
   return;
@@ -93,7 +101,6 @@ seterror(null)
 startTransition(async (
 )=>{
     let {name,bloodgroup,age,hospitalname}=datapasresd
-
   console.log(name,bloodgroup,age,hospitalname,"isiisis")
   let contract=await makecontract()
 if (contract) {
@@ -111,6 +118,7 @@ if (!woeking) {
     const addpatient = await   contract.addpatient(name,bloodgroup,age,hospitalname)
 console.log(addpatient,"is the addpatiet return ")
 if (addpatient.gasPrice) {
+ await   Emailsenter(name,hospitalname,email);
 
 console.log("workled")
 seterror(null)
@@ -200,6 +208,14 @@ Add Patient
           label="bloodGroup"
           type="text"
         name='bloodgroup'
+          variant="standard"
+        />
+          <TextField fullWidth  onChange={(e)=>setemail(e.target.value)}
+          id="standard-password-input"
+          label="User email"
+          value={email}
+          type="text"
+        name='useremail'
           variant="standard"
         />
         <TextField
