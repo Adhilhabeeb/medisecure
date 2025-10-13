@@ -48,7 +48,19 @@ function Hospitalmainpage() {
   const [search, setsearch] = useState("");
 let load=searchparams.get("load")
 
+const [loadfound, setloadfound] = useState(false)
+if (load && !loadfound) {
+  
+     async function name(params) {
+    let data= await getallpatients()
+    if (!data.length>0)  return;
+    setAllpatients(data)
+  console.log("loadfoundannnn",Allpatients,"is tyhe dats",data)
 
+    setloadfound(true)
+   }
+   name()
+}
 
   useEffect(() => {
     let user = localStorage.getItem("medisecureuser");
@@ -89,15 +101,6 @@ console.log("called the  ",data)
 
 
 
-// if (load) {
- 
-//    async function name(params) {
-//     let data= await getallpatients()
-//     if (!data.length>0)  return;
-//     setAllpatients(data)
-//    }
-//    name()
-// }
 
   async function getallpatients() {
   
