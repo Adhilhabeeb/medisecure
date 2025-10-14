@@ -26,8 +26,8 @@ import {
 } from "@mui/material";
  import {imagetopinata} from "@/Componenets/Hospital/convertimagetostring"
 import React, { useEffect, useRef, useState } from "react";
-import { AddCircle, Delete, DoneAll, Image, ShoppingBag } from "@mui/icons-material";
-import { contract2 } from "../../Abi/contracts";
+import { AddCircle, Delete, DoneAll, } from "@mui/icons-material";
+// import { contract2 } from "../../Abi/contracts";
 import { getallpatients } from "@/Componenets/Hospital/getallpatientarray";
 import z from "zod";
 // string memory medicine,string memory imagedatastr,string memory  hospitalname,string memory name,string memory doctername,string memory docterspecilist

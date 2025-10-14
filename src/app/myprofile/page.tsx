@@ -82,7 +82,7 @@ function Myprofile() {
   }
 
   const { userdetails } = context;
-  const entries = Object.entries(userdetails).filter(([key]) => key !== "ishospital");
+  const entries = Object.entries(userdetails).filter(([key]) => key !== "ishospital"&& key!=="hospitalname");
 
   return (
     <Fade in>

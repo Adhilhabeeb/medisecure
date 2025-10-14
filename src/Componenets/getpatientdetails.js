@@ -6,6 +6,7 @@ import {
   getDocs
 } from "firebase/firestore";
 import { db } from "@/firebase";
+import { getreports } from "./getreports";
 
 
 
@@ -36,11 +37,17 @@ let message=null
 let contract= await makecontract()
 
 
-    if (!contract| name.trim()==""| !name | !hospitalname  )return {message:" failed to connect contract ",patientde:[]};
+    if (!contract| name.trim()==""| !name | !hospitalname  )return {message:"failed to connect contract ",patientde:[]};
 
 
 let patientdetails= await contract.getpatientdetails(hospitalname,name)
+let reports=await getreports({name,hospitalname})
 
+console.log("is the rpeorts new:",reports
+)
+
+
+let userfoundobj={}
 try {
 let userisloginer= await contract.getuseremial(name)
   
@@ -57,5 +64,5 @@ let patientde={
 
 }
 console.log( patientde,"is patinet details")
-return {patientde,message:message}
+return {patientde,message:message,reports}
 }
