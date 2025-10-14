@@ -147,15 +147,25 @@ export default function PatientDetails() {
                     </Grid>
 
                     <Box mt={2}>
-                      <Button
+                      <Button   sx={{
+                        color : !imagepath.length>0? "red":"primary",
+          border:  !imagepath.length>0? "1px solid":"primary",
+          background:  !imagepath.length>0? "white":"primary",
+          borderColor:!imagepath.length>0? "red":"primary"
+                      }}
                         variant="contained"
                         size="small"
                         onClick={() => {
                           setIndex((prev) => (prev === ind ? null : ind));
                         }}
                       >
-                        {index === ind ? "Hide Images" : "Show Images"}
+
+
+                        { imagepath.length>0?index === ind ? "Hide Images" : "Show Images":"no images found"}
                       </Button>
+
+                      {/* {!imagepath.length>0&& <Typography >
+                        no images found</Typography>} */}
                     </Box>
 
                     {/* Image List */}
@@ -182,7 +192,7 @@ export default function PatientDetails() {
                     )}
 
                     {/* Medicines */}
-                    {medicines?.length > 0 && (
+                    {medicines?.length > 0 ? (
                       <Box mt={2}>
                         <Typography variant="body1" fontWeight={600}>
                           Medicines:
@@ -193,7 +203,10 @@ export default function PatientDetails() {
                           ))}
                         </Stack>
                       </Box>
-                    )}
+                    ) :<Typography  >
+
+                      no medicines
+                      </Typography>}
                   </CardContent>
                 </Card>
               )
