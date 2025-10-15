@@ -99,7 +99,8 @@ export default function PatientDetails() {
       )}
 
       {/* Reports */}
-      {reports.length > 0 && (
+      {reports.length > 0 && 
+      (
         <>
           <Typography variant="h5" color="primary" gutterBottom>
             Reports
@@ -213,7 +214,12 @@ export default function PatientDetails() {
             )}
           </Stack>
         </>
-      )}
+      )
+     
+      }
+
+      {!isPending  && !reports.length>0 && <Button  fullWidth >No Reporst Found </Button>}
+      
     </Box>
   );
 }

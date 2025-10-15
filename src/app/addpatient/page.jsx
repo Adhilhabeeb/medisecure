@@ -8,7 +8,8 @@ import DoneIcon from '@mui/icons-material/Done';
 import { redirect, useSearchParams } from 'next/navigation';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import {Emailsenter} from "@/Componenets/Hospital/mailsent"
-
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import {db} from "../../firebase"
 
 function page() {
   const [email, setemail] = useState("")
@@ -120,6 +121,10 @@ console.log(addpatient,"is the addpatiet return ")
 if (addpatient.gasPrice) {
  await   Emailsenter(name,hospitalname,email);
 
+                        const docRef = await addDoc(collection(db, "patinetuser"), {
+                          name,email,hospitalname
+                        });
+                        console.log(docRef,"added to atoientusersarray")
 console.log("workled")
 seterror(null)
   setsuccess(true)

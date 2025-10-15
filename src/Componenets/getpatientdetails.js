@@ -45,13 +45,19 @@ let reports=await getreports({name,hospitalname})
 
 console.log("is the rpeorts new:",reports
 )
-
-
+  let user=await contract.users(name)
+console.log(user,"userffff")
 let userfoundobj={}
 try {
+
 let userisloginer= await contract.getuseremial(name)
-  
-console.log(userisloginer,"user foundf")
+if (userisloginer) {
+  let user=await contract.users(name)
+
+userfoundobj=user
+  console.log("is the user  from datasbe",...user)
+}
+console.log(userisloginer,"user foundf",)
 } catch (error) { console.log(error.reason,"in useremail functiion calling ")
 message=error.reason
  
@@ -59,9 +65,18 @@ message=error.reason
 let patientde={
     name: patientdetails[0],
     age: patientdetails[1],
-        bloodgroup: patientdetails[2]
+        bloodgroup: patientdetails[2],
+      
   
 
+}
+
+if (userfoundobj[0]) {
+  patientde={...patientde,
+    email:userfoundobj[1],
+    contact:userfoundobj[2],
+    hospitalname:userfoundobj[3]
+  }
 }
 console.log( patientde,"is patinet details")
 return {patientde,message:message,reports}
