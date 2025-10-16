@@ -1,7 +1,7 @@
 
 "use client"
 import { Authcontext } from '@/Componenets/Authpassing'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useTransition } from 'react'
 import {
   query,
   collection,
@@ -12,13 +12,13 @@ import { db } from '@/firebase';
 import { makecontract } from '@/walletconnect/Contract';
 
 
-import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { Select, MenuItem, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
 
 
 
 function page() {
 
-
+let [transition,starttransition]=useTransition()
 const [hosusername, sethosusername] = useState(null)
     const [mycontarct, setmycontarct] = useState(null)
     const [multipleusers, setmultipleusers] = useState([])
@@ -28,20 +28,29 @@ const [hosusername, sethosusername] = useState(null)
 const [fechedpatinetarray, setfechedpatinetarray] = useState([])
 useEffect(() => {
 
+
+// console.log(loading,"ois loadi ng")
 if (userdetails&& fechedpatinetarray.length>0 && mycontarct) {
 
-  console.log(userdetails,"is  userdetsails innnn")
+  // console.log(userdetails,"is  userdetsails innnn")
   let {email}= userdetails
   let patinetfetch= fechedpatinetarray.filter((el)=>el.email==email)
   let toname=sleected.trim()!=""? patinetfetch.filter((el=>el.hospitalname==sleected))[0].name : patinetfetch[0].name
-  
-  console.log(patinetfetch,"is gthbe patinet fetch ",toname)
+  if(sleected.trim()==""){
+   console.log(sleected,"ikiki",patinetfetch[0].hospitalname,"is the nulla value",toname)
+setsleected(patinetfetch[0].hospitalname)
+
+
+  }else{
+ 
+    console.log("not  null",sleected)
+  }
+  // console.log(patinetfetch,"is gthbe patinet fetch ",toname)
 if(patinetfetch.length>1)
   {
-
     if (!multipleusers.length>0){
 
-      console.log("legthis small")
+      // console.log("legthis small")
     setmultipleusers(patinetfetch)
     }
 
@@ -52,26 +61,28 @@ if(patinetfetch.length>1)
 
 
  async function checkUserEmail(name) {
-      try {
+   try {
         const userExists = await mycontarct?.getuseremial(name);
-        console.log("userExists  :", userExists);
+        console.log("userExists onname  :", userExists);
       
 sethosusername(name)
+
         if (userExists) {
           setuserpatientexist(userExists);
         } else {
           setuserpatientexist(false);
         }
       } catch (err) {
-        console.log("Error fetching user email:", err?.reason);
+        // console.log("Error fetching user email:", err?.reason);
         setuserpatientexist(false);
       }
-    console.log(name,"is  name  passed  ")
+    // console.log(name,"is  name  passed  in func ")
 }
 
-    checkUserEmail(toname);
+     starttransition(checkUserEmail.bind(null,toname)) ;
+    
 
-  console.log(email,"is thne emai;")
+  // console.log(email,"is thne emai;")
   
 }
 }, [userdetails,fechedpatinetarray,mycontarct,sleected])
@@ -90,7 +101,7 @@ useEffect(() => {
           });
           const sorted = fetched.sort((a, b) => a.createdAt - b.createdAt);
       setfechedpatinetarray(sorted)
-      console.log("updted the fetchpat",fechedpatinetarray)
+      // console.log("updted the fetchpat",fechedpatinetarray)
         });
 let contract=  await makecontract()
 
@@ -108,11 +119,19 @@ setmycontarct(contract)
 }, [])
 
     
-    console.log(userdetails,loading,"is conn")
+if(loading)    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="60vh">
+        <CircularProgress />
+      </Box>
+    );
+
+    // console.log(userdetails,loading,"is conn")
   return (
     <div>
         viewrepopaget {userdetails?.name}
-        {userpatientexist? "userexits":"notexist"}
+      <Button loading={transition} variant="contained">
+          {userpatientexist? "userexits":"notexist"}
+      </Button>
                    {multipleusers.length>0&& <FormControl fullWidth>
               <InputLabel id="hospital-select-label">Select Hospital</InputLabel>
               <Select
