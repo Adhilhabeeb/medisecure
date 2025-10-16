@@ -11,8 +11,10 @@ import {
 import { db } from '@/firebase';
 import { makecontract } from '@/walletconnect/Contract';
 
+import { getpatientdetails } from "@/Componenets/getpatientdetails";
 
 import { Select, MenuItem, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
+import { getreports } from '@/Componenets/getreports';
 
 
 
@@ -62,18 +64,29 @@ if(patinetfetch.length>1)
 
  async function checkUserEmail(name) {
    try {
+
+    
+
+    // let recoreds= await getpatientdetails({name,hospitalname:patinetfetch[0].hospitalname})
+    // console.log(recoreds,"is the recored getted")
         const userExists = await mycontarct?.getuseremial(name);
         console.log("userExists onname  :", userExists);
       
 sethosusername(name)
 
         if (userExists) {
+let hospitalname=sleected.trim()!=""? patinetfetch.filter((el=>el.hospitalname==sleected))[0].hospitalname : patinetfetch[0].hospitalname
+          console.log(hospitalname,"is ythe hopspoytal name ",toname)
+          let users= await mycontarct.getpatientdetails(hospitalname,toname)
+          console.log("usersd is the usersede:",users,"Amdnnd",)
+let reportsdhh=await getreports({name:toname,hospitalname})
+console.log(reportsdhh.length,"is the length")
           setuserpatientexist(userExists);
         } else {
           setuserpatientexist(false);
         }
       } catch (err) {
-        // console.log("Error fetching user email:", err?.reason);
+        console.log("Error fetching user email:", err?.reason);
         setuserpatientexist(false);
       }
     // console.log(name,"is  name  passed  in func ")

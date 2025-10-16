@@ -41,6 +41,8 @@ let contract= await makecontract()
 
 
 let patientdetails= await contract.getpatientdetails(hospitalname,name)
+
+console.log(patientdetails ,"is the patinet fdetails ")
 let reports=await getreports({name,hospitalname})
 
 console.log("is the rpeorts new:",reports
