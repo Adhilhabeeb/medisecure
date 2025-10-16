@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import {makecontract} from "../../walletconnect/Contract"
 import InputLabel from '@mui/material/InputLabel';
+
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -25,7 +26,7 @@ import {
   Chip,
 } from "@mui/material";
  import {imagetopinata} from "@/Componenets/Hospital/convertimagetostring"
-import React, { useEffect, useRef, useState, useTransition } from "react";
+import React, { Suspense, useEffect, useRef, useState, useTransition } from "react";
 import { AddCircle, Delete, DoneAll, } from "@mui/icons-material";
 // import { contract2 } from "../../Abi/contracts";
 import { getallpatients } from "@/Componenets/Hospital/getallpatientarray";
@@ -483,4 +484,10 @@ setpatient((prev)=>{
   );
 }
 
-export default Addreportpage;
+export default function name() {
+  
+  return  <Suspense fallback={<div>Loading...</div>}>
+
+  <Addreportpage/>
+  </Suspense>
+};

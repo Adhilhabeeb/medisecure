@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { Emailsenter } from "@/Componenets/Hospital/mailsent";
 import { getpatientdetails } from "@/Componenets/getpatientdetails";
+
 import {
   Box,
   Button,
@@ -16,9 +17,9 @@ import {
   Chip,
   Stack,
 } from "@mui/material";
-import { useEffect, useLayoutEffect, useState, useTransition } from "react";
+import { Suspense, useEffect, useLayoutEffect, useState, useTransition } from "react";
 
-export default function PatientDetails() {
+ function PatientDetails() {
   const [isPending, startTransition] = useTransition();
   const searchparams = useSearchParams();
   const name = searchparams.get("uname") ?? "";
@@ -222,4 +223,13 @@ export default function PatientDetails() {
       
     </Box>
   );
+}
+
+export default  function name(params) {
+    return  <Suspense fallback={<div>Loading...</div>}>
+<PatientDetails/>
+
+
+    </Suspense>
+  
 }

@@ -16,12 +16,14 @@ import {
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { makecontract } from "@/walletconnect/Contract";
 import { Contract } from "ethers";
+import Grid from '@mui/material/Grid';
+
 import {
   Container,
   Paper,
   Typography,
   Button,
-  Grid,
+  
   CircularProgress,
   Divider,
   Box,
@@ -386,33 +388,34 @@ console.log(fechedpatinetarray,"is patumet array")
           <Divider sx={{ mb: 3 }} />
 
           {/* User details */}
-          <Grid container spacing={3}>
-            {entries.map(([name, value],ind) => (
-              <Grid item xs={12} sm={6} key={ind}>
-                <Paper
-                  elevation={1}
-                  sx={{
-                    p: 2,
-                    borderRadius: 3,
-                    bgcolor: "rgba(255,255,255,0.8)",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                    transition: "all 0.25s ease-in-out",
-                    "&:hover": {
-                      transform: "translateY(-3px)",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                    },
-                  }}
-                >
-                  <Typography variant="subtitle2" color="text.secondary">
-                    {name.toUpperCase()}
-                  </Typography>
-                  <Typography variant="body1" fontWeight={600} mt={0.5}>
-                    {String(value)}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
+          {Array.isArray(entries) &&
+  entries.map(([name, value], ind) => (
+<Grid component="div" item xs={12} sm={6} key={name + ind}>
+
+      <Paper
+        elevation={1}
+        sx={{
+          p: 2,
+          borderRadius: 3,
+          bgcolor: "rgba(255,255,255,0.8)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          transition: "all 0.25s ease-in-out",
+          "&:hover": {
+            transform: "translateY(-3px)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          },
+        }}
+      >
+        <Typography variant="subtitle2" color="text.secondary">
+          {String(name).toUpperCase()}
+        </Typography>
+        <Typography variant="body1" fontWeight={600} mt={0.5}>
+          {String(value)}
+        </Typography>
+      </Paper>
+    </Grid>
+))}
+
 
           {/* Hospital Status Section */}
 

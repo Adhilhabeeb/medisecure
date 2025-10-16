@@ -5,7 +5,7 @@
 // import Link from "next/link";
 import './globals.css';
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useState } from "react";
  import  Individialpage from "@/Componenets/individialpage"
  import Hospitalmainpage from "@/Componenets/Hospital/hospitalmainpage"
  import Usermain from "@/Componenets/userpage/Usermain"
@@ -14,7 +14,7 @@ import { useSearchParams } from "next/navigation";
        type usertype = Record<string, string>
 
 
-export default function Home() {
+ function Home() {
   let searchparams=useSearchParams()
 
   const [userdetails, setuserdetails] = useState<null | usertype>(null);
@@ -40,7 +40,8 @@ export default function Home() {
 
 
   return (
-<>
+
+      <>
    
 {!loading&& userdetails?
 <>
@@ -71,10 +72,19 @@ export default function Home() {
 
 </>
 
+
+
     
 
   );
 }
 
 
+
+export default  function name() {
+  return  <Suspense fallback={<div>Loading...</div>}>
+
+ <Home/>
+  </Suspense>
+}
 export type {usertype}

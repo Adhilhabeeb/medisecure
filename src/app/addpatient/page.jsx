@@ -1,7 +1,7 @@
 "use client"
 import { makecontract } from '@/walletconnect/Contract'
 import { Box, Card, CardHeader, Typography,CardContent, TextField, Stack,CardActions,Button } from '@mui/material'
-import React, { useEffect, useState, useTransition } from 'react'
+import React, { Suspense, useEffect, useState, useTransition } from 'react'
 //name blood age hispitalname
 import DoneIcon from '@mui/icons-material/Done';
   import { z } from 'zod';
@@ -11,7 +11,7 @@ import {Emailsenter} from "@/Componenets/Hospital/mailsent"
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import {db} from "../../firebase"
 
-function page() {
+function Ppage() {
   const [email, setemail] = useState("")
   const [ishospitalworking, setishospitalworking] = useState(true)
   let saerchparas=useSearchParams()
@@ -168,7 +168,9 @@ useEffect(() => {
 
 
 return (
-    <Box display={"flex"} justifyContent={"center"} alignItems={"center"} pt={5} boxSizing={"border-box"}>
+
+  
+     <Box display={"flex"} justifyContent={"center"} alignItems={"center"} pt={5} boxSizing={"border-box"}>
 <Card      sx={{width:"30%",
 backgroundColor:"white",
 borderRadius:"10px",
@@ -244,7 +246,13 @@ Add Patient
 </Card>
 
     </Box>
+ 
+   
   )
 }
 
-export default page
+export default function name() {
+  return <Suspense fallback={<div>Loading...</div>}>
+    <Ppage/>
+  </Suspense>
+}

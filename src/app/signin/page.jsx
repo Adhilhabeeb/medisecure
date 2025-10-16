@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
+import { Suspense, useEffect, useState } from "react";
 import {
   query,
   collection,
   onSnapshot,
 } from "firebase/firestore";
-import { useSearchParams, useRouter } from "next/navigation";
 import { db } from "@/firebase";
 import Link from "next/link";
 import {
@@ -66,7 +67,8 @@ function Page() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 10 }}>
+ 
+       <Container maxWidth="sm" sx={{ mt: 10 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
         <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
           Sign In
@@ -113,7 +115,16 @@ function Page() {
         </Box>
       </Paper>
     </Container>
+ 
+   
   );
 }
 
-export default Page;
+export default  function pa() {
+  
+
+return  <Suspense fallback={<div>Loading...</div>}>
+  <Page/>
+</Suspense>
+
+};
