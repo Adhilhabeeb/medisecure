@@ -185,6 +185,8 @@ startusersctive(checkuser)
 }, [fechedpatinetarray,context,mycontract])
 
    async  function handleactiveaccont() {
+
+
 if (emailhospitalname.trim()=="") {
 // emailhospitalinput.current?.placeholder="plz enter the hospitalname";
   return;
@@ -202,7 +204,12 @@ let {
 } = context.userdetails;
   await patientusersfetch()
 
-if (fechedpatinetarray.some(({name,email})=>email==context.userdetails?.email)) {
+
+  async function adduyser() {
+    if (!context || !mycontract) {
+      return ;
+    }
+  if (fechedpatinetarray.some(({name,email})=>email==context.userdetails?.email)) {
   let patinetarray=fechedpatinetarray.filter(({name,email})=>email==context.userdetails?.email)
       if (patinetarray.length>1) {
   let tofiltervalue=selectedHospital.trim()!=""?selectedHospital:patinetarray.map((el)=>el.hospitalname)[0]
@@ -235,6 +242,11 @@ if (createpatinetaccount.gasPrice) {
       }
 
 }
+}
+
+startusersctive(adduyser)
+  
+
  
 console.log(fechedpatinetarray,"is patumet array")
 
@@ -389,7 +401,7 @@ console.log(fechedpatinetarray,"is patumet array")
 
           {/* Hospital Status Section */}
           {!userdetails.ishospital &&<>
-          <Button  variant="outlined"   onClick={()=>{ if (!userpatientexist) {
+          <Button  variant="outlined" loading={useractive}   onClick={()=>{ if (!userpatientexist) {
             setshowactiveform(true)
           } }}>
              {userpatientexist?"userexist":"activeacoount"}
