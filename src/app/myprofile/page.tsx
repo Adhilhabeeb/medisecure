@@ -56,7 +56,7 @@ const [showactiveform, setshowactiveform] = useState(false)
 const [fechedpatinetarray, setfechedpatinetarray] = useState<DocumentData[]> ([])
 const [userpatientexist, setuserpatientexist] = useState(false)
 const [userhosname, setuserhosname] = useState<string|null>(null)
-
+const [usernotfound, setusernotfound] = useState(false)
 
 useEffect(() => {
     setshowactiveform(false)
@@ -174,6 +174,9 @@ setuserpatientexist(false)
 
 
 
+}else{
+
+ setusernotfound(true)
 }
  
 }
@@ -210,18 +213,23 @@ let {
       return ;
     }
   if (fechedpatinetarray.some(({name,email})=>email==context.userdetails?.email)) {
+    
   let patinetarray=fechedpatinetarray.filter(({name,email})=>email==context.userdetails?.email)
       if (patinetarray.length>1) {
   let tofiltervalue=selectedHospital.trim()!=""?selectedHospital:patinetarray.map((el)=>el.hospitalname)[0]
 
  let filterername=patinetarray.filter(({name,email,hospitalname})=>hospitalname== tofiltervalue)[0]?.name
-
+try {
+  
 let createpatinetaccount= await mycontract.createpatientaccount(filterername,emailhospitalname,email,contactnum)
 
 if (createpatinetaccount.gasPrice) {
   setuserpatientexist(true)
   setuserhosname(filterername)
   setshowactiveform(false)
+}
+} catch (error) {
+  setuserpatientexist(false)
 }
 
        return;
@@ -231,15 +239,22 @@ if (createpatinetaccount.gasPrice) {
  let filteredname=fechedpatinetarray.filter(({name,email})=>email==context.userdetails?.email)[0].name
  console.log(filteredname,"is    namemme",emailhospitalname,email,contactnum)
 
- 
-let createpatinetaccount= await mycontract.createpatientaccount(filteredname,emailhospitalname,email,contactnum)
+ try {
+  let createpatinetaccount= await mycontract.createpatientaccount(filteredname,emailhospitalname,email,contactnum)
 
 if (createpatinetaccount.gasPrice) {
   setuserpatientexist(true)
   setuserhosname(filteredname)
   setshowactiveform(false)
 }
+ } catch (error) {
+  setuserpatientexist(false)
+ }
+
       }
+
+}else{
+setusernotfound(true)
 
 }
 }
@@ -400,7 +415,11 @@ console.log(fechedpatinetarray,"is patumet array")
           </Grid>
 
           {/* Hospital Status Section */}
-          {!userdetails.ishospital &&<>
+
+          {usernotfound&&  <Button  color="error"  >
+            user not found on any hospital  contact you hospital
+            </Button>}
+          {!userdetails.ishospital && !usernotfound  && !useractive &&<>
           <Button  variant="outlined" loading={useractive}   onClick={()=>{ if (!userpatientexist) {
             setshowactiveform(true)
           } }}>

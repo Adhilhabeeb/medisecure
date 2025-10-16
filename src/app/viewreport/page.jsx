@@ -66,12 +66,17 @@ function Page() {
   const [selected, setselected] = useState("");
   const [userpatientexist, setuserpatientexist] = useState(false);
   const [fechedpatinetarray, setfechedpatinetarray] = useState([]);
-
+const [error, seterror] = useState(null)
   useEffect(() => {
     function starterfunc() {
+
       if (userdetails && fechedpatinetarray.length > 0 && mycontract) {
         const { email } = userdetails;
         const patinetfetch = fechedpatinetarray.filter((el) => el.email === email);
+        console.log(patinetfetch,"isnte patinetfetch")
+        if (patinetfetch.length>0) {
+          
+        
         const toname =
           selected.trim() !== ""
             ? patinetfetch.filter((el) => el.hospitalname === selected)[0]?.name
@@ -88,18 +93,25 @@ function Page() {
               ? patinetfetch.filter((el) => el.hospitalname === selected)[0]?.hospitalname
               : patinetfetch[0]?.hospitalname;
 
+               const reportsData = await getreports({ name: toname, hospitalname });
+
+            console.log(reportsData,"is the freorur datvss d")
+            setreports(reportsData);
           try {
             const userExists = await mycontract?.getuseremial(name);
             setuserpatientexist(!!userExists);
 
-            const reportsData = await getreports({ name: toname, hospitalname });
-            setreports(reportsData);
+           
           } catch (err) {
             console.log("Error fetching user email:", err);
             setuserpatientexist(false);
           }
         }
         checkUserEmail(toname);
+      }else{
+seterror("You are not found in any hospitals")
+
+      }
       }
     }
     startTransition(starterfunc);
@@ -202,7 +214,7 @@ function Page() {
                     textTransform: "capitalize",
                   }}
                 >
-                  {userpatientexist ? "User Found" : "User Not Found"}
+                  {userpatientexist ? "User Found" : "User Not Found plz active it "}
                 </Button>:<Button size="small">
 
                   <CircularProgress/>
