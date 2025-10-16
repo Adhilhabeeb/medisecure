@@ -10,16 +10,26 @@ import {
 } from "firebase/firestore";
 import { db } from '@/firebase';
 import { makecontract } from '@/walletconnect/Contract';
-
+import Table from '@mui/material/Table';
+import TableBody from     '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import { getpatientdetails } from "@/Componenets/getpatientdetails";
 
 import { Select, MenuItem, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
 import { getreports } from '@/Componenets/getreports';
+import Image from 'next/image';
 
 
-
+function Imagecompoinet({path}){
+  return <Image src={path}  width={30} height={30} />
+}
 function page() {
 
+const [reports, setreports] = useState([])
 let [transition,starttransition]=useTransition()
 const [hosusername, sethosusername] = useState(null)
     const [mycontarct, setmycontarct] = useState(null)
@@ -43,9 +53,6 @@ if (userdetails&& fechedpatinetarray.length>0 && mycontarct) {
 setsleected(patinetfetch[0].hospitalname)
 
 
-  }else{
- 
-    console.log("not  null",sleected)
   }
   // console.log(patinetfetch,"is gthbe patinet fetch ",toname)
 if(patinetfetch.length>1)
@@ -63,6 +70,8 @@ if(patinetfetch.length>1)
 
 
  async function checkUserEmail(name) {
+      let hospitalname=sleected.trim()!=""? patinetfetch.filter((el=>el.hospitalname==sleected))[0].hospitalname : patinetfetch[0].hospitalname
+
    try {
 
     
@@ -75,20 +84,27 @@ if(patinetfetch.length>1)
 sethosusername(name)
 
         if (userExists) {
-let hospitalname=sleected.trim()!=""? patinetfetch.filter((el=>el.hospitalname==sleected))[0].hospitalname : patinetfetch[0].hospitalname
-          console.log(hospitalname,"is ythe hopspoytal name ",toname)
-          let users= await mycontarct.getpatientdetails(hospitalname,toname)
-          console.log("usersd is the usersede:",users,"Amdnnd",)
-let reportsdhh=await getreports({name:toname,hospitalname})
-console.log(reportsdhh.length,"is the length")
-          setuserpatientexist(userExists);
+           setuserpatientexist(true);
+
+
+//           console.log("usersd is the usersede:",users,"Amdnnd",)
+
+         
         } else {
           setuserpatientexist(false);
         }
+
+//           console.log(hospitalname,"is ythe hopspoytal name ",toname)
+let reportsdhh=await getreports({name:toname,hospitalname})
+console.log(reportsdhh,"is the resoprts si the ")
+setreports(reportsdhh)
       } catch (err) {
-        console.log("Error fetching user email:", err?.reason);
+        console.log("Error fetching user email:", err);
         setuserpatientexist(false);
       }
+
+
+
     // console.log(name,"is  name  passed  in func ")
 }
 
@@ -160,8 +176,59 @@ if(loading)    return (
                     </MenuItem>
                   ))}
               </Select>
-            </FormControl>}
-        </div>
+            </FormControl>}    
+            
+            
+            
+            
+            {reports.length>0 ?    <>
+            {/* {reports?.map(({date,doctername,docterspecilist,imagepath,medicines})=>{
+
+
+
+
+            })} */}
+              <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+
+            <TableCell align="right">date</TableCell>
+            <TableCell align="right">doctername</TableCell>
+            <TableCell align="right">docterspecilist</TableCell>
+            <TableCell align="right">imagepath</TableCell>
+            <TableCell align="right">medicines</TableCell>
+
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {reports?.map(({date,doctername,docterspecilist,imagepath,medicines},ind)=>(
+            <TableRow
+              key={ind}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                {date}
+              </TableCell>
+              <TableCell align="right">{doctername}</TableCell>
+              <TableCell align="right">{docterspecilist}</TableCell>
+              <TableCell align="right">{
+           imagepath.length>0?imagepath.map((el,ind)=><Imagecompoinet key={ind} path={el}/>):"no pathfound"
+                
+                }</TableCell>
+               <TableCell align="right">{
+           medicines.length>0?medicines.map(el=>el):"no medicinesfound"
+                
+                }</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  
+            
+            
+            </>:"no reports"}    </div>
   )
 }
 

@@ -25,7 +25,7 @@ import {
   Chip,
 } from "@mui/material";
  import {imagetopinata} from "@/Componenets/Hospital/convertimagetostring"
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
 import { AddCircle, Delete, DoneAll, } from "@mui/icons-material";
 // import { contract2 } from "../../Abi/contracts";
 import { getallpatients } from "@/Componenets/Hospital/getallpatientarray";
@@ -34,6 +34,7 @@ import z from "zod";
 function Addreportpage() {
 const [sucess, setsucess] = useState(false)
   const [error, seterror] = useState(null)
+  let [startsubmit,startsubmiyransityin]=useTransition()
    const [docterspecialist, setdocterspecialist] = React.useState('');
    const handleChange = (event) => {
     console.log(event.target.value,"is s  s sythe docternsamer")
@@ -465,8 +466,8 @@ setpatient((prev)=>{
         </CardContent>
         <CardActions>
           <Button
-            onClick={handlesubmit}
-            // disabled={isPending}
+            onClick={()=>startsubmiyransityin(handlesubmit)}
+            disabled={startsubmit}
             variant="contained"
             sx={{ margin: "0 auto" }}
             size="small"
