@@ -51,6 +51,7 @@ function ImageCard({ path }) {
         width={80}
         height={80}
         alt="Report"
+        priority
         style={{ objectFit: "cover", borderRadius: "10px" }}
       />
     </motion.div>
