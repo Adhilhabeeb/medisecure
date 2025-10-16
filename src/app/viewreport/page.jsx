@@ -1,235 +1,327 @@
-
-"use client"
-import { Authcontext } from '@/Componenets/Authpassing'
-import React, { useContext, useEffect, useState, useTransition } from 'react'
+"use client";
+import { Authcontext } from "@/Componenets/Authpassing";
+import React, { useContext, useEffect, useState, useTransition } from "react";
 import {
   query,
   collection,
   onSnapshot,
-  DocumentData,
 } from "firebase/firestore";
-import { db } from '@/firebase';
-import { makecontract } from '@/walletconnect/Contract';
-import Table from '@mui/material/Table';
-import TableBody from     '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { getpatientdetails } from "@/Componenets/getpatientdetails";
+import { db } from "@/firebase";
+import { makecontract } from "@/walletconnect/Contract";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  CircularProgress,
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Divider,
+} from "@mui/material";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { getreports } from "@/Componenets/getreports";
 
-import { Select, MenuItem, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
-import { getreports } from '@/Componenets/getreports';
-import Image from 'next/image';
-
-
-function Imagecompoinet({path}){
-  return <Image src={path}  width={30} height={30} />
+function ImageCard({ path }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ duration: 0.3 }}
+      style={{
+        display: "inline-block",
+        margin: "6px",
+        borderRadius: "10px",
+        overflow: "hidden",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+      }}
+    >
+      <Image
+        src={path}
+        width={80}
+        height={80}
+        alt="Report"
+        style={{ objectFit: "cover", borderRadius: "10px" }}
+      />
+    </motion.div>
+  );
 }
-function page() {
 
-const [reports, setreports] = useState([])
-let [transition,starttransition]=useTransition()
-const [hosusername, sethosusername] = useState(null)
-    const [mycontarct, setmycontarct] = useState(null)
-    const [multipleusers, setmultipleusers] = useState([])
-     let {userdetails,loading}=useContext(Authcontext)
-     const [sleected, setsleected] = useState("")
-     const [userpatientexist, setuserpatientexist] = useState(false)
-const [fechedpatinetarray, setfechedpatinetarray] = useState([])
-useEffect(() => {
+function Page() {
+  const [reports, setreports] = useState([]);
+  const [transition, startTransition] = useTransition();
+  const [mycontract, setmycontract] = useState(null);
+  const [multipleusers, setmultipleusers] = useState([]);
+  const { userdetails, loading } = useContext(Authcontext);
+  const [selected, setselected] = useState("");
+  const [userpatientexist, setuserpatientexist] = useState(false);
+  const [fechedpatinetarray, setfechedpatinetarray] = useState([]);
 
+  useEffect(() => {
+    function starterfunc() {
+      if (userdetails && fechedpatinetarray.length > 0 && mycontract) {
+        const { email } = userdetails;
+        const patinetfetch = fechedpatinetarray.filter((el) => el.email === email);
+        const toname =
+          selected.trim() !== ""
+            ? patinetfetch.filter((el) => el.hospitalname === selected)[0]?.name
+            : patinetfetch[0]?.name;
 
-// console.log(loading,"ois loadi ng")
-if (userdetails&& fechedpatinetarray.length>0 && mycontarct) {
+        if (selected.trim() === "") setselected(patinetfetch[0]?.hospitalname);
 
-  // console.log(userdetails,"is  userdetsails innnn")
-  let {email}= userdetails
-  let patinetfetch= fechedpatinetarray.filter((el)=>el.email==email)
-  let toname=sleected.trim()!=""? patinetfetch.filter((el=>el.hospitalname==sleected))[0].name : patinetfetch[0].name
-  if(sleected.trim()==""){
-   console.log(sleected,"ikiki",patinetfetch[0].hospitalname,"is the nulla value",toname)
-setsleected(patinetfetch[0].hospitalname)
+        if (patinetfetch.length > 1 && !multipleusers.length > 0)
+          setmultipleusers(patinetfetch);
 
+        async function checkUserEmail(name) {
+          const hospitalname =
+            selected.trim() !== ""
+              ? patinetfetch.filter((el) => el.hospitalname === selected)[0]?.hospitalname
+              : patinetfetch[0]?.hospitalname;
 
-  }
-  // console.log(patinetfetch,"is gthbe patinet fetch ",toname)
-if(patinetfetch.length>1)
-  {
-    if (!multipleusers.length>0){
+          try {
+            const userExists = await mycontract?.getuseremial(name);
+            setuserpatientexist(!!userExists);
 
-      // console.log("legthis small")
-    setmultipleusers(patinetfetch)
+            const reportsData = await getreports({ name: toname, hospitalname });
+            setreports(reportsData);
+          } catch (err) {
+            console.log("Error fetching user email:", err);
+            setuserpatientexist(false);
+          }
+        }
+        checkUserEmail(toname);
+      }
+    }
+    startTransition(starterfunc);
+  }, [userdetails, fechedpatinetarray, mycontract, selected]);
+
+  useEffect(() => {
+    async function patientusersfetch() {
+      const q = query(collection(db, "patinetuser"));
+      onSnapshot(q, (querySnapshot) => {
+        let fetched = [];
+        querySnapshot.forEach((doc) => fetched.push({ ...doc.data(), id: doc.id }));
+        const sorted = fetched.sort((a, b) => a.createdAt - b.createdAt);
+        setfechedpatinetarray(sorted);
+      });
+
+      const contract = await makecontract();
+      if (contract) setmycontract(contract);
     }
 
+    patientusersfetch();
+  }, []);
 
-
-   
-  }
-
-
- async function checkUserEmail(name) {
-      let hospitalname=sleected.trim()!=""? patinetfetch.filter((el=>el.hospitalname==sleected))[0].hospitalname : patinetfetch[0].hospitalname
-
-   try {
-
-    
-
-    // let recoreds= await getpatientdetails({name,hospitalname:patinetfetch[0].hospitalname})
-    // console.log(recoreds,"is the recored getted")
-        const userExists = await mycontarct?.getuseremial(name);
-        console.log("userExists onname  :", userExists);
-      
-sethosusername(name)
-
-        if (userExists) {
-           setuserpatientexist(true);
-
-
-//           console.log("usersd is the usersede:",users,"Amdnnd",)
-
-         
-        } else {
-          setuserpatientexist(false);
-        }
-
-//           console.log(hospitalname,"is ythe hopspoytal name ",toname)
-let reportsdhh=await getreports({name:toname,hospitalname})
-console.log(reportsdhh,"is the resoprts si the ")
-setreports(reportsdhh)
-      } catch (err) {
-        console.log("Error fetching user email:", err);
-        setuserpatientexist(false);
-      }
-
-
-
-    // console.log(name,"is  name  passed  in func ")
-}
-
-     starttransition(checkUserEmail.bind(null,toname)) ;
-    
-
-  // console.log(email,"is thne emai;")
-  
-}
-}, [userdetails,fechedpatinetarray,mycontarct,sleected])
-
-
-
-useEffect(() => {
-  
-  
-   async function patientusersfetch() {
-        const q = query(collection(db, "patinetuser"));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          let  fetched = [];
-          querySnapshot.forEach((doc) => {
-            fetched.push({ ...doc.data(), id: doc.id });
-          });
-          const sorted = fetched.sort((a, b) => a.createdAt - b.createdAt);
-      setfechedpatinetarray(sorted)
-      // console.log("updted the fetchpat",fechedpatinetarray)
-        });
-let contract=  await makecontract()
-
-
-if (!contract) return;
-
-setmycontarct(contract)
-
-
-  }
-  
-
-  patientusersfetch()
-
-}, [])
-
-    
-if(loading)    return (
+  if (loading)
+    return (
       <Box display="flex" justifyContent="center" alignItems="center" height="60vh">
         <CircularProgress />
       </Box>
     );
 
-    // console.log(userdetails,loading,"is conn")
+   
   return (
-    <div>
-        viewrepopaget {userdetails?.name}
-      <Button loading={transition} variant="contained">
-          {userpatientexist? "userexits":"notexist"}
-      </Button>
-                   {multipleusers.length>0&& <FormControl fullWidth>
-              <InputLabel id="hospital-select-label">Select Hospital</InputLabel>
-              <Select
-                labelId="hospital-select-label"
-                value={sleected}
-                label="Select Hospital"
-                onChange={(e)=>setsleected(e.target.value)}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background:
+          "linear-gradient(135deg, #e0f7fa 0%, #f0f4ff 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        py: 1,
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        style={{
+          width: "90%",
+          height: "auto",
+          
+        }}
+      >
+        <Paper
+          sx={{
+            backdropFilter: "blur(15px)",
+            backgroundColor: "rgba(255,255,255,0.75)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+            p: 4,
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Typography
+              variant="h4"
+              textAlign="center"
+              fontWeight={700}
+              color="primary"
+              gutterBottom
+            >
+              Patient Medical Reports
+            </Typography>
+
+            <Typography
+              textAlign="center"
+              color="text.secondary"
+              sx={{ mb: 3 }}
+            >
+              View and manage your hospital-issued reports in a smooth, modern interface
+            </Typography>
+
+            <Divider sx={{ mb: 3 }} />
+
+            <Box textAlign="center"  mb={3}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
               >
-                {multipleusers.length > 0 &&
-                  multipleusers.map(({hospitalname}, index) => (
+               {!transition?<Button loading={transition}
+                  variant={userpatientexist ? "contained" : "outlined"}
+                  color={userpatientexist ? "success" : "error"}
+                  sx={{
+                    px: 4,
+                    py: 1,
+                    fontWeight: 600,
+                    borderRadius: 3,
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {userpatientexist ? "User Found" : "User Not Found"}
+                </Button>:<Button size="small">
+
+                  <CircularProgress/>
+                  </Button>}
+              </motion.div>
+            </Box>
+
+            {multipleusers.length > 0 && (
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <InputLabel id="hospital-select-label">
+                  Select Hospital
+                </InputLabel>
+                <Select
+                  labelId="hospital-select-label"
+                  value={selected}
+                  label="Select Hospital"
+                  onChange={(e) => setselected(e.target.value)}
+                  sx={{ borderRadius: 3, backgroundColor: "#fff" }}
+                >
+                  {multipleusers.map(({ hospitalname }, index) => (
                     <MenuItem key={index} value={hospitalname}>
                       {hospitalname}
                     </MenuItem>
                   ))}
-              </Select>
-            </FormControl>}    
-            
-            
-            
-            
-            {reports.length>0 ?    <>
-            {/* {reports?.map(({date,doctername,docterspecilist,imagepath,medicines})=>{
+                </Select>
+              </FormControl>
+            )}
 
-
-
-
-            })} */}
-              <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-
-            <TableCell align="right">date</TableCell>
-            <TableCell align="right">doctername</TableCell>
-            <TableCell align="right">docterspecilist</TableCell>
-            <TableCell align="right">imagepath</TableCell>
-            <TableCell align="right">medicines</TableCell>
-
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {reports?.map(({date,doctername,docterspecilist,imagepath,medicines},ind)=>(
-            <TableRow
-              key={ind}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {date}
-              </TableCell>
-              <TableCell align="right">{doctername}</TableCell>
-              <TableCell align="right">{docterspecilist}</TableCell>
-              <TableCell align="right">{
-           imagepath.length>0?imagepath.map((el,ind)=><Imagecompoinet key={ind} path={el}/>):"no pathfound"
-                
-                }</TableCell>
-               <TableCell align="right">{
-           medicines.length>0?medicines.map(el=>el):"no medicinesfound"
-                
-                }</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  
-            
-            
-            </>:"no reports"}    </div>
-  )
+            {reports.length > 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7 }}
+              >
+                <TableContainer
+                  component={Paper}
+                  sx={{
+                    borderRadius: 4,
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Table>
+                    <TableHead sx={{ backgroundColor: "#1976d2" }}>
+                      <TableRow>
+                        {["Date", "Doctor", "Specialization", "Reports", "Medicines"].map(
+                          (head, i) => (
+                            <TableCell
+                              key={i}
+                              align="center"
+                              sx={{ color: "#fff", fontWeight: 600 }}
+                            >
+                              {head}
+                            </TableCell>
+                          )
+                        )}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {reports.map(
+                        ({ date, doctername, docterspecilist, imagepath, medicines }, i) => (
+                          <motion.tr
+                            key={i}
+                            whileHover={{ backgroundColor: "#f9f9ff" }}
+                            transition={{ duration: 0.3 }}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <TableCell align="center">{date}</TableCell>
+                            <TableCell align="center">{doctername}</TableCell>
+                            <TableCell align="center">{docterspecilist}</TableCell>
+                            <TableCell align="center">
+                              {imagepath?.length > 0 ? (
+                                imagepath.map((el, idx) => (
+                                  <ImageCard key={idx} path={el} />
+                                ))
+                              ) : (
+                                <Typography variant="body2" color="text.secondary">
+                                  No Images
+                                </Typography>
+                              )}
+                            </TableCell>
+                            <TableCell align="center">
+                              {medicines?.length > 0 ? (
+                                medicines.map((m, idx) => (
+                                  <Typography
+                                    key={idx}
+                                    variant="body2"
+                                    sx={{ color: "#1976d2" }}
+                                  >
+                                    {m}
+                                  </Typography>
+                                ))
+                              ) : (
+                                <Typography variant="body2" color="text.secondary">
+                                  No Medicines
+                                </Typography>
+                              )}
+                            </TableCell>
+                          </motion.tr>
+                        )
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </motion.div>
+            ) : (
+              <Typography
+                align="center"
+                color="text.secondary"
+                sx={{ mt: 4, fontSize: "1.1rem" }}
+              >
+                No reports found for this patient.
+              </Typography>
+            )}
+          </motion.div>
+        </Paper>
+      </motion.div>
+    </Box>
+  );
 }
 
-export default page;
+export default Page;

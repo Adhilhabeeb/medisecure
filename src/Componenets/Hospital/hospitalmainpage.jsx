@@ -267,7 +267,7 @@ setTimeout(() => {
             </Button>}
            
           {Allpatients?.map((patient,ind) => (
-            <>
+            <div  key={ind} >
               <Grid key={ind} container padding={"1em"}>
                 <Grid size={{ xs: 12, md: 8 }}>
                   <Box
@@ -324,7 +324,7 @@ setTimeout(() => {
               </Grid>
 
               <Divider />
-            </>
+            </ div>
           ))}
         </List>
       )}
