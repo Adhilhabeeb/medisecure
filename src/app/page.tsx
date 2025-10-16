@@ -3,6 +3,8 @@
 // import Image from "next/image";
 // import styles from "./page.module.css";
 // import Link from "next/link";
+import './globals.css';
+
 import { useEffect, useLayoutEffect, useState } from "react";
  import  Individialpage from "@/Componenets/individialpage"
  import Hospitalmainpage from "@/Componenets/Hospital/hospitalmainpage"
@@ -50,7 +52,7 @@ export default function Home() {
       </>:
       
 <> 
- <Usermain />
+ <Usermain  user={userdetails} />
   </ >
       
      
