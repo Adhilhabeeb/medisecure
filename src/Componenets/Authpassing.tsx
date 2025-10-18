@@ -1,12 +1,14 @@
 
 "use client"
 import { usertype } from '@/app/page';
+import { checksignisdocter } from '@/utils/docters';
 import { usePathname, useRouter } from 'next/navigation';
 
 import React, { createContext, useContext ,useState,useLayoutEffect, useEffect} from 'react'
   export type authuser={
     userdetails:usertype|null;
-    loading?:Boolean
+    loading?:Boolean,
+    isdocter?:Boolean
   }
 
 export  const  Authcontext=createContext<authuser |null>(null)
@@ -27,6 +29,7 @@ function Authpassing({children}:Readonly<{
   
   const [userdetails, setuserdetails] = useState<null | usertype>(null);
   const [loading, setloading] = useState(true)
+  const [isdocter, setisdocter] = useState(false)
   useLayoutEffect(() => {
 
     let storge: string | undefined =
@@ -36,14 +39,26 @@ function Authpassing({children}:Readonly<{
     if (storge) {
       let parsedusr = JSON.parse(storge);
       console.log(parsedusr,"sitttttttstrrrrr");
+
       setuserdetails(parsedusr);
+             async function checkisuser() {
+let  isdoc= await checksignisdocter(parsedusr.email)
+console.log(isdoc,"is doceter in authpassing")
+        setisdocter(isdoc)
+           setloading(false)
+      }
+      checkisuser()
     }else{
+         setloading(false)
       console.log("storage not found")
  if (pathname!="/" && pathname!="signup") {
-  // router.push("/signin")
+  router.push("/signin")
  }
     }
-    setloading(false)
+
+
+
+ 
   },[]);
 
   useEffect(() => {
@@ -54,9 +69,16 @@ function Authpassing({children}:Readonly<{
       let parsedusr = JSON.parse(storge);
       console.log(parsedusr,"sitttttttstrrrrr");
       setuserdetails(parsedusr);
+               async function checkisuser() {
+let  isdoc= await checksignisdocter(parsedusr.email)
+console.log(isdoc,"is doceter in authpassing in pathchnge")
+        setisdocter(isdoc)
+           setloading(false)
+      }
+      checkisuser()
     }else{
       console.log("storage not found")
-
+   setloading(false)
  if (pathname!="/"  && pathname!="/signup") {
 
   
@@ -71,7 +93,7 @@ function Authpassing({children}:Readonly<{
   
   return (
     <>   
-   <Authcontext.Provider value={{userdetails,loading}}>
+   <Authcontext.Provider value={{userdetails,loading,isdocter}}>
 
 
         {children}

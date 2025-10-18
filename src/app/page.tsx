@@ -11,24 +11,40 @@ import { Suspense, useEffect, useLayoutEffect, useState } from "react";
  import Usermain from "@/Componenets/userpage/Usermain"
 import Checkuseronlocalstorage from "@/Componenets/userexist"
 import { useSearchParams } from "next/navigation";
+import { checksignisdocter } from '@/utils/docters';
+import { set } from 'zod';
        type usertype = Record<string, string>
-
+import Docter from '@/Componenets/docter/Docter';
 
  function Home() {
   let searchparams=useSearchParams()
 
   const [userdetails, setuserdetails] = useState<null | usertype>(null);
   const [loading, setloading] = useState(true)
+  const [isdocter, setisdocter] = useState(false)
   useLayoutEffect(() => {
 
     let storge: string | undefined =
       localStorage.getItem("medisecureuser") ?? undefined;
     if (storge) {
       let parsedusr = JSON.parse(storge);
-      console.log(parsedusr);
+      console.log(parsedusr.email,"is the parsed user from local storage");
+
+
       setuserdetails(parsedusr);
+
+
+      async function checkisuser() {
+let  isdoc= await checksignisdocter(parsedusr.email)
+        setisdocter(isdoc)
+          setloading(false)
+      }
+      checkisuser()
+      console.log(parsedusr, "is the parsed user from local storage");
+    }else{
+         setloading(false)
     }
-    setloading(false)
+ 
   },[]);
 
 
@@ -37,13 +53,23 @@ import { useSearchParams } from "next/navigation";
     return <>
     <h1>loading</h1></>
   }
+if (!loading  && isdocter) {
+  return <>
+  <Docter/>
+  
+  </>
+}
 
-
+  if (!loading&& !userdetails) {
+    return <Individialpage/>
+  }
   return (
 
       <>
    
-{!loading&& userdetails?
+{!loading&& userdetails? 
+
+
 <>
       
       {userdetails?.ishospital?<>
@@ -62,6 +88,11 @@ import { useSearchParams } from "next/navigation";
 
       {}
     </>
+
+
+
+
+
 :<>
 <Individialpage/>
 

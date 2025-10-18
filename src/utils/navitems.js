@@ -2,7 +2,7 @@ let hosptialnavitem=[
     {name:"Home",href:"/"},
     {name:"AddPatient",href:"addpatient"},
     {    name:"Addreport",href:"addreport" },
-   
+       {    name:"Adddocter",href:"addocter" },
 {name:"MyProfile",href:"myprofile"}
 
 ]

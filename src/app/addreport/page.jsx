@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
   import {getreports} from "@/Componenets/getreports"
-import {doctors} from "@/utils/docters"
+import { filterdocterbasedonhospital} from "@/utils/docters"
 import {
   Box,
   Card,
@@ -30,13 +30,15 @@ import React, { Suspense, useEffect, useRef, useState, useTransition } from "rea
 import { AddCircle, Delete, DoneAll, } from "@mui/icons-material";
 // import { contract2 } from "../../Abi/contracts";
 import { getallpatients } from "@/Componenets/Hospital/getallpatientarray";
-import z from "zod";
+import z, { json } from "zod";
+import { Addpatinettodocter } from "../../Componenets/docter/addpatinettodocter";
 // string memory medicine,string memory imagedatastr,string memory  hospitalname,string memory name,string memory doctername,string memory docterspecilist
 function Addreportpage() {
 const [sucess, setsucess] = useState(false)
   const [error, seterror] = useState(null)
+  const [doctors, setdoctors] = useState([])
   let [startsubmit,startsubmiyransityin]=useTransition()
-   const [docterspecialist, setdocterspecialist] = React.useState('');
+   const [docterspecialist, setdoctorspecialist] = React.useState('');
    const handleChange = (event) => {
     console.log(event.target.value,"is s  s sythe docternsamer")
     // setdo(event.target.value);
@@ -157,15 +159,22 @@ try {
    let  data =await imagetopinata(patient.imagepaths) 
 datatopass.imagepaths=JSON.stringify(data)
 datatopass.medicines=JSON.stringify(datatopass.medicines)
-  console.log(JSON.parse(datatopass.imagepaths),"i ythe  imgpathjhhh",datatopass.medicines)
+  console.log(JSON.parse(datatopass.imagepaths),"i ythe  imgpathjhhh",datatopass.medicines,datatopass,"isthe `datatopass`")
   let dataparsed= checkpatientfor(datatopass)
+
   if(!dataparsed) return ;
   console.log("is the datapareded",JSON.parse(dataparsed.medicines),error)
+  
+
   let addreport= await contract.addreports(datatopass.medicines,datatopass.imagepaths,datatopass.hospitalname,datatopass.name,datatopass.doctername,datatopass.docterspecilist)
- if (addreport.gasPrice) {
+
+  if (addreport.gasPrice) {
   console.log(addreport,"is the rpeot sucess")
+
 setsucess(" transaction complete")
 seterror(null)
+  Addpatinettodocter( datatopass)
+
 return;
  }
 
@@ -192,6 +201,7 @@ console.log(addreport,"is the addreporyt  aftetef")
 
 
    function handleinputchange(e) {
+    console.log("is the vaues ",e.target.name,e.target.value)
     setpatient((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
@@ -220,13 +230,27 @@ if (e.target.files[0]) {
 setpatient((prev=>({...prev,docterspecilist:""})))
 
  if (patient.doctername.trim()=="") return;
-let docterspecialist =doctors.find(el=>el.name==patient.doctername)
+let docterspecialist =doctors.find(el=>el.doctername==patient.doctername)
 console.log(docterspecialist,"is gfilyter docte speculkait")
-if ("name" in docterspecialist) {
-setpatient((prev=>({...prev,docterspecilist:docterspecialist.specialization})))
+if ("doctername" in docterspecialist) {
+setpatient((prev=>({...prev,docterspecilist:docterspecialist.specilist})))
   
 }
+console.log(doctors,"is the docters list",patient.doctername)
+
+
 }, [patient.doctername])
+useEffect(() => {
+ 
+  async function fetchdata(){
+    let doctersgeted= await filterdocterbasedonhospital(JSON.parse(localStorage.getItem("medisecureuser")).name)
+if (doctersgeted&&doctersgeted.length>0) {
+  console.log(doctersgeted,"is the docters geted based on hospital name in addrepot")
+setdoctors(doctersgeted)
+}
+  }
+  fetchdata()
+}, [])
 
   return (
     <Box
@@ -330,8 +354,8 @@ setpatient((prev=>({...prev,docterspecilist:docterspecialist.specialization})))
         </MenuItem>
         
       {doctors.map((el,ind)=>{
-        return  <MenuItem  key={ind} value={el.name}>
-          <em>{el.name}</em>
+        return  <MenuItem  key={ind} value={el.doctername}>
+          <em>{el.doctername}</em>
         </MenuItem>
       })}
       </Select>

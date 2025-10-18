@@ -1,6 +1,6 @@
 "use client"
 import { Avatar, Box, Button, Chip, Drawer, Paper, Stack, Typography } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import AppBar from '@mui/material/AppBar';
 import ReactDOM from "react-dom";
 
@@ -22,11 +22,14 @@ import Checkuseronlocalstorage  from "@/Componenets/userexist"
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { redirect, usePathname, useRouter } from 'next/navigation';
+import { Authcontext } from '@/Componenets/Authpassing';
 export  const dynamic="force-dynamic"
 function Header() {
   let router=useRouter()
 let navitems=useRef(null)
 let pathname=usePathname()
+
+let context=useContext(Authcontext)
 const drawerWidth = 250
 const [hovernavindex, sethovernavindex] = useState(null)
 const [openprofile, setopenprofile] = useState(false)
@@ -73,20 +76,28 @@ redirect("/signin")
 
 useEffect(() => {
   const existingUser = Checkuseronlocalstorage();
+    console.log(context,"is the context in header")
   
 
   if (existingUser) {
  console.log("exisyt",existingUser)
+ 
     setuser(existingUser);
+
+    console.log(context,"is the context in header")
     navitems.current = existingUser.ishospital ? hosptialnavitem : usernavitems;
   }
 }, [])
 
+
   useEffect(() => {
+    console.log(context,"is the context in header")
   
   const existingUser = Checkuseronlocalstorage();
   if (existingUser) {
     setuser(existingUser);
+    console.log(context,"is the context in header")
+
     navitems.current = existingUser.ishospital ? hosptialnavitem : usernavitems;
   }
 
@@ -109,7 +120,7 @@ useEffect(() => {
     <Stack flexGrow={1} alignItems={"center"} justifyContent={"center"} >
         <Typography variant='p' textAlign={"center"}  component={"h3"}>
 
-            MediSecure
+            MediSecure {context.isdocter?" - Doctor Portal":""}
             </Typography>
 
 
@@ -125,7 +136,7 @@ return(
     <Link key={ind} href={href}>
         <Chip  color={'primary'}  variant={ind==hovernavindex?"filled":"outlined"}  onMouseEnter={()=>{
           sethovernavindex(ind)
-        }}   onMouseLeave={()=>sethovernavindex(null)} label={name +ind} />
+        }}   onMouseLeave={()=>sethovernavindex(null)} label={name } />
         <div  ></div>
     </Link>
 )
