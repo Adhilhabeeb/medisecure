@@ -26,7 +26,7 @@ async function getusers() {
   export async function getpatientdetails(patient){
   
  let users=await getusers()
-console.log("usererreyyriryryr",users,"is",patient)
+// console.log("usererreyyriryryr",users,"is",patient)
 let message=null
 
     let {name,hospitalname}=patient
@@ -42,13 +42,13 @@ let contract= await makecontract()
 
 let patientdetails= await contract.getpatientdetails(hospitalname,name)
 
-console.log(patientdetails ,"is the patinet fdetails ")
+// console.log(patientdetails ,"is the patinet fdetails ")
 let reports=await getreports({name,hospitalname})
 
-console.log("is the rpeorts new:",reports
-)
+// console.log("is the rpeorts new:",reports
+// )
   let user=await contract.users(name)
-console.log(user,"userffff")
+// console.log(user,"userffff")
 let userfoundobj={}
 try {
 
@@ -57,9 +57,9 @@ if (userisloginer) {
   let user=await contract.users(name)
 
 userfoundobj=user
-  console.log("is the user  from datasbe",...user)
+  // console.log("is the user  from datasbe",...user)
 }
-console.log(userisloginer,"user foundf",)
+// console.log(userisloginer,"user foundf",)
 } catch (error) { console.log(error.reason,"in useremail functiion calling ")
 message=error.reason
  

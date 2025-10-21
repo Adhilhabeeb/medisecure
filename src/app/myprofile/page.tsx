@@ -419,9 +419,10 @@ console.log(fechedpatinetarray,"is patumet array")
 
           {/* Hospital Status Section */}
 
-          {usernotfound&&  <Button  color="error"  >
+          {usernotfound && !useractive  && !context.isdocter  &&  <Button  color="error"  >
             user not found on any hospital  contact you hospital
             </Button>}
+           
           {!userdetails.ishospital && !usernotfound  && !useractive &&<>
           <Button  variant="outlined" loading={useractive}   onClick={()=>{ if (!userpatientexist) {
             setshowactiveform(true)

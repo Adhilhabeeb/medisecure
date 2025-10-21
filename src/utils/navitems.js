@@ -7,6 +7,9 @@ let hosptialnavitem=[
 
 ]
 
+let docterpage=[
+     {    name:"Home",href:"/" },{name:"MyProfile",href:"myprofile"}
+]
 let usernavitems=[
     {    name:"Home",href:"/" },
     
@@ -15,13 +18,10 @@ let usernavitems=[
 
 
 ]
-let  doctersnav=[
-    
-]
 
 
 let profiledrawer=[
     {name:"Profile"},
     {name:"signOut" }
 ]
-export {hosptialnavitem,usernavitems,profiledrawer}
+export {hosptialnavitem,usernavitems,profiledrawer,docterpage}

@@ -1,13 +1,13 @@
 "use client"
 import { Avatar, Box, Button, Chip, Drawer, Paper, Stack, Typography } from '@mui/material'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { cache, useContext, useEffect, useRef, useState } from 'react'
 import AppBar from '@mui/material/AppBar';
 import ReactDOM from "react-dom";
 
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 
-
+import {checkdocterisalreadyexist} from "@/Componenets/docter/addpatinettodocter"
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -17,18 +17,19 @@ import Toolbar from '@mui/material/Toolbar';
 
 
 import { deepOrange } from '@mui/material/colors';
-import {hosptialnavitem,usernavitems} from "@/utils/navitems"
+import {docterpage, hosptialnavitem,usernavitems} from "@/utils/navitems"
 import Checkuseronlocalstorage  from "@/Componenets/userexist"
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { redirect, usePathname, useRouter } from 'next/navigation';
 import { Authcontext } from '@/Componenets/Authpassing';
 export  const dynamic="force-dynamic"
+let checkdocterisalreadyexistt=cache(checkdocterisalreadyexist)
 function Header() {
   let router=useRouter()
 let navitems=useRef(null)
 let pathname=usePathname()
-
+const [navitemsa, setnavitems] = useState([])
 let context=useContext(Authcontext)
 const drawerWidth = 250
 const [hovernavindex, sethovernavindex] = useState(null)
@@ -84,8 +85,18 @@ useEffect(() => {
  
     setuser(existingUser);
 
-    console.log(context,"is the context in header")
+async function name(params) {
+let {isdocterexist}=  await checkdocterisalreadyexistt(existingUser.email)
+  console.log(isdocterexist,"is the doodtttttt")
+  if (isdocterexist) {
+    setnavitems(docterpage)
+     navitems.current = docterpage;
+  }
+}
+name()
 
+    console.log(context,"is the context in header in useefct first")
+setnavitems(existingUser.ishospital ? hosptialnavitem : usernavitems)
     
     navitems.current = existingUser.ishospital ? hosptialnavitem : usernavitems;
   }
@@ -98,14 +109,32 @@ useEffect(() => {
   const existingUser = Checkuseronlocalstorage();
   if (existingUser) {
     setuser(existingUser);
-    console.log(context,"is the context in header")
-
+    async function name(params) {
+let {isdocterexist}=  await checkdocterisalreadyexistt(existingUser.email)
+  console.log(isdocterexist,"is the doodtttttt")
+  if (isdocterexist) {
+    setnavitems(docterpage)
+     navitems.current = docterpage;
+  }
+}
+name()
+    console.log(context,"is the context in header inpathchange")
+setnavitems(existingUser.ishospital ? hosptialnavitem : usernavitems)
     navitems.current = existingUser.ishospital ? hosptialnavitem : usernavitems;
   }
 
 
   }, [pathname]);
    
+
+  useEffect(() => {
+    
+    if (context.isdocter) {
+
+    
+    }
+  }, [context.isdocter])
+  
   //   const handleSignOut = () => {
   //   localStorage.removeItem("medisecureuser");
   //   setuser(null);
@@ -133,7 +162,7 @@ useEffect(() => {
 <Stack direction="row"  flexGrow={3} display={{xs:"none",sm:"flex"}}   alignItems={"center"}  justifyContent={"center"}  spacing={2} >
     
   {user&&
-  navitems.current?.map(({name,href},ind)=>{
+  navitemsa?.map(({name,href},ind)=>{
 return(
     <Link key={ind} href={href}>
         <Chip  color={'primary'}  variant={ind==hovernavindex?"filled":"outlined"}  onMouseEnter={()=>{

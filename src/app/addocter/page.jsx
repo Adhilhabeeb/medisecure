@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import {
   Box,
   TextField,
@@ -15,11 +15,16 @@ export default function DocterDetailsPage() {
   const [docterdetails, setdocterdetails] = useState({
     docteremail: "",
     doctername: "",
-    hospitalname: JSON.parse(localStorage.getItem("medisecureuser")).name,
+    hospitalname: "",
     doctercontactnumber: "",
     specilist: "",
   });
 
+
+  useEffect(() => {
+      setdocterdetails({...docterdetails,hospitalname:JSON.parse(localStorage.getItem("medisecureuser")).name})
+  }, [])
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setdocterdetails((prev) => ({ ...prev, [name]: value }));

@@ -67,11 +67,11 @@ console.log(isdoc,"is doceter in authpassing")
    console.log(storge ,"isstorfgge")
  if (storge) {
       let parsedusr = JSON.parse(storge);
-      console.log(parsedusr,"sitttttttstrrrrr");
+      // console.log(parsedusr,"sitttttttstrrrrr");
       setuserdetails(parsedusr);
                async function checkisuser() {
 let  isdoc= await checksignisdocter(parsedusr.email)
-console.log(isdoc,"is doceter in authpassing in pathchnge")
+// console.log(isdoc,"is doceter in authpassing in pathchnge")
         setisdocter(isdoc)
            setloading(false)
       }

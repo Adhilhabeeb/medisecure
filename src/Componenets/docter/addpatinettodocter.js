@@ -83,7 +83,7 @@ if (!oldpatinetarray.some(el=>el.name==name && el.hospitalname==hospitalname)) {
 
 }
 
-export { Addpatinettodocter, Addocter ,fetchdoctores};
+export { Addpatinettodocter, Addocter ,fetchdoctores,checkdocterisalreadyexist};
 
 async function updatedocterpatients(userId, oldpatinetarray, newuserobject) {
     try {
