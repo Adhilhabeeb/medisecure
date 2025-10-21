@@ -85,6 +85,8 @@ useEffect(() => {
     setuser(existingUser);
 
     console.log(context,"is the context in header")
+
+    
     navitems.current = existingUser.ishospital ? hosptialnavitem : usernavitems;
   }
 }, [])

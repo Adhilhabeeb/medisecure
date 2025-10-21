@@ -15,6 +15,9 @@ let usernavitems=[
 
 
 ]
+let  doctersnav=[
+    
+]
 
 
 let profiledrawer=[

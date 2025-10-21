@@ -119,6 +119,7 @@ seterror("You are not found in any hospitals")
   }, [userdetails, fechedpatinetarray, mycontract, selected]);
 
   useEffect(() => {
+    
     async function patientusersfetch() {
       const q = query(collection(db, "patinetuser"));
       onSnapshot(q, (querySnapshot) => {
