@@ -24,7 +24,7 @@ async function checkdocterisalreadyexist(email) {
     console.log(fetchdoctoresdata, "isfetched data in checkdocter");
     let isdocterexist = fetchdoctoresdata?.some((el) => el.docteremail === email);
     let docteruser = fetchdoctoresdata?.find((el) => el.docteremail === email);
-    console.log(isdocterexist, "is the docter exist in checkdocter");
+    console.log(isdocterexist, "is the docter exist in checkdocter",docteruser,"is dpcuser");
     return { isdocterexist, docteruser };
 }
 

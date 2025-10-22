@@ -1,11 +1,13 @@
 "use client";
-
+ import triggerWorkflow  from "../../actions/trigger.action"
 import { fetchdoctores } from "@/Componenets/docter/addpatinettodocter";
 import { getpatientdetails } from "@/Componenets/getpatientdetails";
 import { useParams } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { Authcontext } from "@/Componenets/Authpassing";
-
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 // ✅ Material UI Imports
 import {
   Card,
@@ -16,6 +18,8 @@ import {
   Divider,
   CardMedia,
   Chip,
+  Button,
+  TextField,
 } from "@mui/material";
 
 function Page() {
@@ -23,12 +27,17 @@ function Page() {
   let { userdetails } = useContext(Authcontext);
   const { patientname } = params;
   const [patiendee, setpatiende] = useState(null);
-
+const [showdocters, setshowdocters] = useState(false)
+const [docters, setdocters] = useState([])
+const [docterreviewofpatient, setdocterreviewofpatient] = useState("")
+const [doctertosharereport, setdoctertosharereport] = useState([])
   useEffect(() => {
     async function fetchuserreports() {
       let docter = await fetchdoctores();
       let { email } = userdetails;
-
+      let otherdocters = docter.filter((el) => el.docteremail != email);
+      console.log(otherdocters,"is the otehrrdocters")
+setdocters(docter)
       if (docter?.length > 0) {
         let docterar = docter.find((el) => el.docteremail === email);
         let patinetdetails = docterar?.patinets?.find(
@@ -47,7 +56,7 @@ function Page() {
       }
     }
 
-    fetchuserreports();
+ if(userdetails)    fetchuserreports();
   }, [userdetails]);
 
   return (
@@ -147,9 +156,39 @@ function Page() {
                           )}
                         </Box>
                       </CardContent>
+
                     </Card>
                   </Grid>
                 ))}
+                   <Button  size="small"
+        onClick={async () => {
+        setshowdocters(!showdocters)
+        }}
+        className="bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 m-4 rounded-md cursor-pointer"
+      >
+        share report
+      </Button>
+
+    { showdocters&& <FormGroup>
+        { docters?.map((el)=> <FormControlLabel control={<Checkbox onChange={(e)=>{
+
+            setdoctertosharereport((prev)=>{
+if(!prev.includes(el.createdAt.toString())){
+console.log("nott",el.createdAt,prev,":prev")
+    return[...prev,el.createdAt.toString()];
+}else{
+            let dd=prev.filter(ell=>ell!=el.createdAt.toString())
+            console.log(dd,"ois the ddd")
+            return dd;
+    
+}
+
+            })
+
+        } } />}  label={el.docteremail} /> )}
+        <TextField  value={docterreviewofpatient}  onChange={(e)=>setdocterreviewofpatient(e.target.value)}/>
+        <FormControlLabel control={<Button onClick={async ()=>  await triggerWorkflow(doctertosharereport,patientname,userdetails,docterreviewofpatient)}> share </Button>}   />
+    </FormGroup>}
               </Grid>
             ) : (
               <Typography>No reports found.</Typography>

@@ -23,6 +23,8 @@ import Link from 'next/link'
 import styled from '@emotion/styled'
 import { redirect, usePathname, useRouter } from 'next/navigation';
 import { Authcontext } from '@/Componenets/Authpassing';
+import Inbox from '@/Componenets/inbox/inbox';
+import triggerWorkflow from '@/app/actions/trigger.action';
 export  const dynamic="force-dynamic"
 let checkdocterisalreadyexistt=cache(checkdocterisalreadyexist)
 function Header() {
@@ -153,16 +155,20 @@ setnavitems(existingUser.ishospital ? hosptialnavitem : usernavitems)
 
             MediSecure {context.isdocter?" - Doctor Portal":""}
             </Typography>
+<Box>
+
+  </Box>
 
 
-  
     </Stack>
 
   
 <Stack direction="row"  flexGrow={3} display={{xs:"none",sm:"flex"}}   alignItems={"center"}  justifyContent={"center"}  spacing={2} >
-    
-  {user&&
-  navitemsa?.map(({name,href},ind)=>{
+   
+  {user&&   <> 
+
+  
+  { navitemsa?.map(({name,href},ind)=>{
 return(
     <Link key={ind} href={href}>
         <Chip  color={'primary'}  variant={ind==hovernavindex?"filled":"outlined"}  onMouseEnter={()=>{
@@ -171,21 +177,34 @@ return(
         <div  ></div>
     </Link>
 )
-})
+})}
+ 
+
+
+
+
+  </>
+
 }
 
 </Stack>
 
+<Stack flexGrow={1}  >
 
-<Stack flexGrow={1} alignItems={"center"} justifyContent={"center"}>
-  {user ? (
-    <>
-      <Avatar
+  {user ? 
+  
+  
+  (
+    <Box   display={"flex"}    width={"100px"}>
+
+<Inbox  isdocter={context.isdocter}/> 
+        <Avatar
         onClick={() => setopenprofile(!openprofile)}
         sx={{ bgcolor: deepOrange[500], width: 40, height: 40 }}
       >
         {user?.name[0] ?? "?"}
       </Avatar>
+
 
       {openprofile &&
         ReactDOM.createPortal(
@@ -229,13 +248,16 @@ return(
           </Box>,
           document.body
         )}
-    </>
+    </Box>
   ) : (
     <Link href={"/signin"}>
       <Button variant="contained">sign in</Button>
     </Link>
   )}
 </Stack>
+
+ 
+
 
 </Box>
 
