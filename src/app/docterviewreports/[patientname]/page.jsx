@@ -2,7 +2,7 @@
  import triggerWorkflow  from "../../actions/trigger.action"
 import { fetchdoctores } from "@/Componenets/docter/addpatinettodocter";
 import { getpatientdetails } from "@/Componenets/getpatientdetails";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { Authcontext } from "@/Componenets/Authpassing";
 import FormGroup from '@mui/material/FormGroup';
@@ -23,6 +23,9 @@ import {
 } from "@mui/material";
 
 function Page() {
+    let paramssearch=useSearchParams()
+// alert(paramssearch.get("docteremailpass"))
+let docteremailpass=paramssearch.get("docteremailpass")
   const params = useParams();
   let { userdetails } = useContext(Authcontext);
   const { patientname } = params;
@@ -39,7 +42,30 @@ const [doctertosharereport, setdoctertosharereport] = useState([])
       console.log(otherdocters,"is the otehrrdocters")
 setdocters(docter)
       if (docter?.length > 0) {
-        let docterar = docter.find((el) => el.docteremail === email);
+
+
+if (docteremailpass) {
+
+
+  let docterar = docter.find((el) => el.docteremail === docteremailpass );
+     let patinetdetails = docterar?.patinets?.find(
+          (el) => el.name === patientname
+        );
+
+        if (!patinetdetails) return;
+
+        let reportss = await getpatientdetails(patinetdetails);
+        let patientreports = reportss?.reports?.filter(
+          (el) => el.doctername === docterar.doctername
+        );
+
+        reportss.reports = patientreports;
+        setpatiende(reportss);
+
+
+
+}else{
+   let docterar = docter.find((el) => el.docteremail === email );
         let patinetdetails = docterar?.patinets?.find(
           (el) => el.name === patientname
         );
@@ -53,10 +79,13 @@ setdocters(docter)
 
         reportss.reports = patientreports;
         setpatiende(reportss);
+}
+
+     
       }
     }
 
- if(userdetails)    fetchuserreports();
+ if(userdetails )    fetchuserreports();
   }, [userdetails]);
 
   return (
@@ -170,7 +199,7 @@ setdocters(docter)
       </Button>
 
     { showdocters&& <FormGroup>
-        { docters?.map((el)=> <FormControlLabel control={<Checkbox onChange={(e)=>{
+        { docters?.map((el,ind)=> <FormControlLabel key={ind} control={<Checkbox onChange={(e)=>{
 
             setdoctertosharereport((prev)=>{
 if(!prev.includes(el.createdAt.toString())){

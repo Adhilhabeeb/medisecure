@@ -5,10 +5,16 @@ import { fetchdoctores } from "./addpatinettodocter";
 import { Authcontext } from "../Authpassing";
 import Link from "next/link";
 
+
 function Docter() {
+
+
+  
   const { userdetails } = useContext(Authcontext);
   const [docterdetails, setdocterdetails] = useState(null);
   const [hospital, setHospital] = useState(null);
+
+
 
   useLayoutEffect(() => {
     async function fetchDr() {
@@ -95,8 +101,14 @@ function Docter() {
  <div className="space-y-4">
 {docterdetails?.sharedpatients&& docterdetails?.sharedpatients.length>0&& docterdetails?.sharedpatients.map((el,idx)=>(<>
 
-
-{el.name} from {el.docter} <br/>
+ <Link
+                          key={idx}
+                          href={`/docterviewreports/${el.name}?docteremailpass=${el.docter}`}
+                          className="block bg-white shadow-sm p-2 rounded-md hover:bg-blue-50 hover:shadow-md transition"
+                        >
+                        {el.name} from {el.docter}
+                        </Link>
+ <br/>
 </>)) }
   
 
