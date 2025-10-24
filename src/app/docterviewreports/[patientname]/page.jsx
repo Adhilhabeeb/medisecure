@@ -3,7 +3,7 @@
 import { fetchdoctores } from "@/Componenets/docter/addpatinettodocter";
 import { getpatientdetails } from "@/Componenets/getpatientdetails";
 import { useParams, useSearchParams } from "next/navigation";
-import React, { useContext, useEffect, useState } from "react";
+import React, { Suspense, useContext, useEffect, useState } from "react";
 import { Authcontext } from "@/Componenets/Authpassing";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -21,6 +21,8 @@ import {
   Button,
   TextField,
 } from "@mui/material";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/firebase";
 
 function Page() {
     let paramssearch=useSearchParams()
@@ -80,155 +82,204 @@ if (docteremailpass) {
         reportss.reports = patientreports;
         setpatiende(reportss);
 }
-
-     
-      }
+ }
     }
 
  if(userdetails )    fetchuserreports();
   }, [userdetails]);
+  useEffect(() => {
+    // Listen to the entire "users" collection
+     
+    const unsub = onSnapshot(collection(db, "Docters"), (snapshot) => {
+      const usersArray = snapshot.docs.map((doc) => ({
+        id: doc.id,        // document ID
+        ...doc.data(),     // document data
+      }));
+      setdocters(usersArray);
+    });
 
-  return (
-    <Box sx={{ p: 3, background: "#f5f7fa", minHeight: "100vh" }}>
-      <Typography variant="h4" fontWeight={600} gutterBottom>
-        Doctor's Patient Report
-      </Typography>
+    // Cleanup when the component unmounts
+    return () => unsub();
+  }, []);
+return (
+  <Box sx={{ p: 4, backgroundColor: "#f5f7fa", minHeight: "100vh" }}>
+    <Typography variant="h4" fontWeight={600} gutterBottom>
+      Doctor's Patient Report
+    </Typography>
 
-      {patiendee ? (
-        <Grid container spacing={3}>
-          {/* ✅ Patient Details Card */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">
-                  Patient Details
-                </Typography>
-                <Divider sx={{ my: 1 }} />
+    {patiendee ? (
+      <Grid container spacing={4}>
+        {/* ✅ Patient Details Card */}
+        <Grid item xs={12} md={5}>
+          <Card sx={{ boxShadow: 4, borderRadius: 3, p: 2 }}>
+            <CardContent>
+              <Typography variant="h6" color="primary" fontWeight={600}>
+                Patient Details
+              </Typography>
+              <Divider sx={{ my: 2 }} />
 
-                {/* <Typography><strong>Name:</strong> {patiendee.patientde.name}</Typography>
-                <Typography><strong>Age:</strong> {patiendee.patientde.age}</Typography>
-                <Typography><strong>Blood Group:</strong> {patiendee.patientde.bloodgroup}</Typography>
-                <Typography><strong>Contact:</strong> {patiendee.patientde.contact}</Typography>
-                <Typography><strong>Email:</strong> {patiendee.patientde.email}</Typography>
-                <Typography><strong>Hospital:</strong> {patiendee.patientde.hospitalname}</Typography> */}
-                 {Object.entries(patiendee.patientde).map(([key, value]) => (
-                <Grid item xs={12} sm={6} key={key}>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {key.charAt(0).toUpperCase() + key.slice(1)}:
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {value}
-                  </Typography>
-                </Grid>
-              ))}
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* ✅ Reports Section */}
-          <Grid item xs={12}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
-              Reports
-            </Typography>
-
-            {patiendee.reports?.length > 0 ? (
-              <Grid container spacing={3}>
-                {patiendee.reports.map((el, index) => (
-                  <Grid item xs={12} md={6} key={index}>
-                    <Card sx={{ p: 2, boxShadow: 2, borderRadius: 2 }}>
-                      <CardContent>
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          Report Date: {el.date}
-                        </Typography>
-                        <Typography variant="body2">
-                          <strong>Doctor:</strong> {el.doctername} (
-                          {el.docterspecilist})
-                        </Typography>
-
-                        {/* ✅ Images */}
-                        {el.imagepath?.length > 0 && (
-                          <Box sx={{ mt: 1 }}>
-                            {el.imagepath.map((img, i) => (
-                              <CardMedia
-                                key={i}
-                                component="img"
-                                image={img}
-                                alt="report"
-                                sx={{
-                                  height: 140,
-                                  borderRadius: 2,
-                                  objectFit: "cover",
-                                  mb: 1,
-                                }}
-                              />
-                            ))}
-                          </Box>
-                        )}
-
-                        {/* ✅ Medicines */}
-                        <Box sx={{ mt: 1 }}>
-                          <Typography variant="body2" mb={1}>
-                            <strong>Medicines:</strong>
-                          </Typography>
-                          {el.medicines?.length > 0 ? (
-                            el.medicines.map((med, i) => (
-                              <Chip
-                                key={i}
-                                label={med}
-                                sx={{ mr: 1, mb: 1 }}
-                                color="primary"
-                                variant="outlined"
-                              />
-                            ))
-                          ) : (
-                            <Typography>No Medicines</Typography>
-                          )}
-                        </Box>
-                      </CardContent>
-
-                    </Card>
+              <Grid container spacing={2}>
+                {Object.entries(patiendee.patientde).map(([key, value]) => (
+                  <Grid item xs={12} sm={6} key={key}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                      {key.charAt(0).toUpperCase() + key.slice(1)}:
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {value}
+                    </Typography>
                   </Grid>
                 ))}
-                   <Button  size="small"
-        onClick={async () => {
-        setshowdocters(!showdocters)
-        }}
-        className="bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 m-4 rounded-md cursor-pointer"
-      >
-        share report
-      </Button>
-
-    { showdocters&& <FormGroup>
-        { docters?.map((el,ind)=> <FormControlLabel key={ind} control={<Checkbox onChange={(e)=>{
-
-            setdoctertosharereport((prev)=>{
-if(!prev.includes(el.createdAt.toString())){
-console.log("nott",el.createdAt,prev,":prev")
-    return[...prev,el.createdAt.toString()];
-}else{
-            let dd=prev.filter(ell=>ell!=el.createdAt.toString())
-            console.log(dd,"ois the ddd")
-            return dd;
-    
-}
-
-            })
-
-        } } />}  label={el.docteremail} /> )}
-        <TextField  value={docterreviewofpatient}  onChange={(e)=>setdocterreviewofpatient(e.target.value)}/>
-        <FormControlLabel control={<Button onClick={async ()=>  await triggerWorkflow(doctertosharereport,patientname,userdetails,docterreviewofpatient)}> share </Button>}   />
-    </FormGroup>}
               </Grid>
-            ) : (
-              <Typography>No reports found.</Typography>
-            )}
-          </Grid>
+            </CardContent>
+          </Card>
         </Grid>
-      ) : (
-        <Typography>Loading...</Typography>
-      )}
-    </Box>
-  );
+
+        {/* ✅ Reports Section */}
+        <Grid item xs={12} md={7}>
+          <Typography variant="h5" fontWeight={600} gutterBottom>
+            Reports
+          </Typography>
+
+          {patiendee.reports?.length > 0 ? (
+            <Grid container spacing={3}>
+              {patiendee.reports.map((el, index) => (
+                <Grid item xs={12} key={index}>
+                  <Card sx={{ boxShadow: 3, borderRadius: 3, p: 2 }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight={600}>
+                        📅 Report Date: {el.date}
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        <strong>Doctor:</strong> {el.doctername} ({el.docterspecilist})
+                      </Typography>
+
+                      {/* ✅ Images */}
+                      {el.imagepath?.length > 0 && (
+                        <Grid container spacing={2}>
+                          {el.imagepath.map((img, i) => (
+                            <Grid item xs={12} sm={6} key={i}>
+                              <CardMedia
+                                component="img"
+                                image={img}
+                                alt="Report Image"
+                                sx={{
+                                  height: 150,
+                                  borderRadius: 2,
+                                  objectFit: "cover",
+                                  boxShadow: 2,
+                                }}
+                              />
+                            </Grid>
+                          ))}
+                        </Grid>
+                      )}
+
+                      {/* ✅ Medicine List */}
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="body2" fontWeight={600} mb={1}>
+                          💊 Medicines:
+                        </Typography>
+                        {el.medicines?.length > 0 ? (
+                          el.medicines.map((med, i) => (
+                            <Chip
+                              key={i}
+                              label={med}
+                              sx={{ mr: 1, mb: 1 }}
+                              color="primary"
+                              variant="outlined"
+                            />
+                          ))
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            No medicines prescribed.
+                          </Typography>
+                        )}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+
+              {/* ✅ Share Report Button */}
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2, borderRadius: 3, textTransform: "none", boxShadow: 3 }}
+                  onClick={() => setshowdocters(!showdocters)}
+                >
+                  Share Report
+                </Button>
+              </Grid>
+
+              {/* ✅ Choose Doctors & Add Review */}
+              {showdocters && (
+                <Grid item xs={12}>
+                  <Card sx={{ p: 3, boxShadow: 3, borderRadius: 3 }}>
+                    <Typography variant="h6" fontWeight={600} mb={2}>
+                      Select Doctors to Share Report
+                    </Typography>
+                    <FormGroup>
+                      {docters?.map((el, ind) => (
+                        <FormControlLabel
+                          key={ind}
+                          control={
+                            <Checkbox
+                              onChange={() =>
+                                setdoctertosharereport((prev) =>
+                                  prev.includes(el.createdAt.toString())
+                                    ? prev.filter((id) => id !== el.createdAt.toString())
+                                    : [...prev, el.createdAt.toString()]
+                                )
+                              }
+                            />
+                          }
+                          label={el.docteremail}
+                        />
+                      ))}
+                    </FormGroup>
+
+                    {/* ✅ Input Doctor Review */}
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      label="Doctor's Review"
+                      value={docterreviewofpatient}
+                      onChange={(e) => setdocterreviewofpatient(e.target.value)}
+                      sx={{ mt: 2 }}
+                    />
+
+                    {/* ✅ Share Button */}
+                    <Button
+                      variant="contained"
+                      color="success"
+                      sx={{ mt: 2, borderRadius: 3, textTransform: "none" }}
+                      onClick={async () =>
+                        await triggerWorkflow(doctertosharereport, patientname, userdetails, docterreviewofpatient)
+                      }
+                    >
+                      Share Report Now
+                    </Button>
+                  </Card>
+                </Grid>
+              )}
+            </Grid>
+          ) : (
+            <Typography>No reports found.</Typography>
+          )}
+        </Grid>
+      </Grid>
+    ) : (
+      <Typography>Loading...</Typography>
+    )}
+  </Box>
+);
+
 }
 
-export default Page;
+export default function name() {
+  return <Suspense fallback={<div>Loading...</div>}>
+    <Page/>
+  </Suspense>
+};
