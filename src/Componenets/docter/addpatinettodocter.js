@@ -1,7 +1,7 @@
 import { db } from "@/firebase";
 import { query, collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { addDoc } from "firebase/firestore";
-import { check } from "zod";
+
 
 async function fetchdoctores(params) {
     let promisefetchdocters = new Promise(async (resolve, reject) => {
@@ -44,25 +44,35 @@ async function Addocter({
         doctercontactnumber: doctercontactnumber,
         specilist: specilist,
         createdAt: Date.now(),
-        patinets: []
+        patinets: [],
+        sharedpatients:[]
     };
 
     let { isdocterexist, docteruser } = await checkdocterisalreadyexist(
         docteremail
     );
     console.log(isdocterexist, "is the check exist");
+    let stausupdate=false;
     if (isdocterexist) {
         let userhospitalnames = docteruser.hospitalname; // if youwnt make it json 
         let hospitalnameexists = userhospitalnames.includes(hospitalname);
         if (hospitalnameexists) {
             alert("Doctor already registered with this hospital.");
+            return  false;
+
         } else {
-           updatehpsitalnames(docteruser.id, userhospitalnames, hospitalname);
+        return      updatehpsitalnames(docteruser.id, userhospitalnames, hospitalname);
             console.log("Hospital name added to existing doctor.");
         }
     } else {
-        const docRef = await addDoc(collection(db, "Docters"), docterdata);
+  try {
+          const docRef = await addDoc(collection(db, "Docters"), docterdata);
         console.log("Document written with ID: ", docRef.id);
+        return true;
+  } catch (error) {
+    return false;
+        console.error("Error adding document: ", error);
+  }
     }
 }
  async function Addpatinettodocter(datapassed) { 
@@ -83,7 +93,7 @@ if (!oldpatinetarray.some(el=>el.name==name && el.hospitalname==hospitalname)) {
 
 }
 
-export { Addpatinettodocter, Addocter ,fetchdoctores,checkdocterisalreadyexist};
+export { Addpatinettodocter, Addocter ,fetchdoctores,checkdocterisalreadyexist,addsharredpatinet};
 
 async function updatedocterpatients(userId, oldpatinetarray, newuserobject) {
     try {
@@ -108,9 +118,57 @@ async function updatehpsitalnames(userId, oldhosptalarray, newhpsoyalname) {
         await updateDoc(userRef, {
             hospitalname: [...oldhosptalarray, newhpsoyalname] // the field to update
         });
-
         console.log("hospital name updated successfully!");
+
+        return true;
     } catch (error) {
         console.error("Error updating username:", error);
+        return false;
+
     }
+}
+
+
+  async function addsharredpatinet(data,docterdetails) {
+    let {docteremail}=docterdetails
+    let {docteremail:datadocteremail,patientname:datapatientname}=data
+
+
+    console.log("docteremila",datadocteremail,"patinetname",datapatientname,data)
+
+
+
+    let { isdocterexist, docteruser } = await checkdocterisalreadyexist(
+        docteremail
+    );
+
+    if (docteruser) {
+        let alreadyinsharedpainet= docteruser?.sharedpatients?.some(el=>el.name==datapatientname&&el.docter==datadocteremail)   
+        console.log(alreadyinsharedpainet,"is already in shared patinet")
+    
+    if (!alreadyinsharedpainet) {
+
+         try {
+        const userRef = doc(db, "Docters", docteruser.id); // Reference to specific user document
+
+        await updateDoc(userRef, {
+         sharedpatients:[...docteruser.sharedpatients,{name:datapatientname,docter:datadocteremail}] // the field to update
+        });
+        console.log("sharedpatiey name updated successfully!");
+
+        return true;
+    } catch (error) {
+        console.error("Error updating username:", error);
+        return false;
+
+    }
+    }else{
+
+        alert("Patient already shared with this doctor.")
+    }
+    
+    }
+
+    console.log(isdocterexist,"iss",docteruser,"docuser")
+
 }

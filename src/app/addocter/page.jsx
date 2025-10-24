@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState ,useEffect} from "react";
+import React, { useState ,useEffect,useTransition} from "react";
 import {
   Box,
   TextField,
@@ -12,6 +12,9 @@ import {
 import { Addocter } from "@/Componenets/docter/addpatinettodocter";
 
 export default function DocterDetailsPage() {
+
+  const [sucess, setsucess] = useState(null)
+  let [loading,startloading]=useTransition()
   const [docterdetails, setdocterdetails] = useState({
     docteremail: "",
     doctername: "",
@@ -19,7 +22,7 @@ export default function DocterDetailsPage() {
     doctercontactnumber: "",
     specilist: "",
   });
-
+const [error, seterror] = useState(false)
 
   useEffect(() => {
       setdocterdetails({...docterdetails,hospitalname:JSON.parse(localStorage.getItem("medisecureuser")).name})
@@ -30,15 +33,26 @@ export default function DocterDetailsPage() {
     setdocterdetails((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =   (e) => {
     e.preventDefault();
-    Addocter(
+ startloading(async ()=>{
+      let status= await    Addocter(
       docterdetails
     )
+if (status) {
+  setsucess(status)
+}else{
+  seterror(true)
+}
+    
+
+    
+ })
     console.log("Doctor Details:", docterdetails);
   };
 
   return (
+
     <Box
       sx={{
         minHeight: "100vh",
@@ -49,6 +63,7 @@ export default function DocterDetailsPage() {
         p: 2,
       }}
     >
+      
       <Paper
         elevation={4}
         sx={{
@@ -204,9 +219,10 @@ export default function DocterDetailsPage() {
             type="submit"
             variant="contained"
             fullWidth
+            disabled={loading}
             sx={{ mt: 3, py: 1 }}
           >
-            Submit
+            Submit. {sucess &&!loading && " Doctor Added Successfully"} { !sucess&&!loading && error&&" Failed to add Doctor"}
           </Button>
         </form>
       </Paper>

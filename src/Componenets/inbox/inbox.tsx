@@ -13,9 +13,11 @@ import {
 import "@knocklabs/react/dist/index.css";
 import { useState,useRef, useContext, useEffect, useTransition } from "react";
 import { Authcontext } from "../Authpassing";
-import { checkdocterisalreadyexist } from "../docter/addpatinettodocter";
+import { addsharredpatinet, checkdocterisalreadyexist } from "../docter/addpatinettodocter";
 
 const Inbox = ({userid}:{userid?:string}) => {
+
+  const [docterdetails, setdocterdetails] = useState <any>(null)
     const [idtppass, setidtppass] = useState<string | null>(userid?userid:null)
     let context=useContext(Authcontext)
 
@@ -36,6 +38,7 @@ console.log(context?.userdetails,"i sthe contecttuserdetisl")
 
   console.log("docteruser=",isdocterexist,"docter",docteruser)
   if(docteruser){
+    setdocterdetails(docteruser)
 setidtppass(`${docteruser.createdAt}`)
   }
 }
@@ -70,7 +73,11 @@ if(context?.userdetails) startloading(checkif);
             />
           </div>
           <div className="h-[550px] w-[420px]">
-            <NotificationFeedPopover
+      
+            <NotificationFeedPopover 
+
+            
+       onNotificationClick={(item) => addsharredpatinet(item.data,docterdetails)}
              buttonRef={notifButtonRef}
             isVisible={isVisible}
             onClose={() => setIsVisible(false)}  >

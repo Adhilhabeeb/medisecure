@@ -51,7 +51,7 @@ function Docter() {
           🏥 Hospitals You Work In
         </h2>
         <div className="space-y-4">
-          {docterdetails?.hospitalname?.map((item, idx) => (
+          { docterdetails?.hospitalname?.map((item, idx) => (
             <div key={idx} className="bg-white rounded-xl shadow hover:shadow-lg transition">
               <div
                 onClick={() => toggleHospital(item)}
@@ -70,7 +70,10 @@ function Docter() {
                     Patients List:
                   </p>
                   <div className="grid gap-2">
-                    {docterdetails?.patinets
+               
+
+                      {docterdetails?.patinets.length>0 ?
+                       docterdetails?.patinets
                       ?.filter((p) => p.hospitalname === item)
                       .map((patient, i) => (
                         <Link
@@ -80,13 +83,26 @@ function Docter() {
                         >
                           {patient.name}
                         </Link>
-                      ))}
+                      ))
+                      
+                      :" No patients assigned yet."}
                   </div>
                 </div>
               )}
             </div>
           ))}
         </div>
+ <div className="space-y-4">
+{docterdetails?.sharedpatients&& docterdetails?.sharedpatients.length>0&& docterdetails?.sharedpatients.map((el,idx)=>(<>
+
+
+{el.name} from {el.docter} <br/>
+</>)) }
+  
+
+
+ </div>
+
       </div>
     </div>
   );
