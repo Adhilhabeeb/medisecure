@@ -6,6 +6,7 @@ import Header from "@/Header/Header"
 
 import {Authpassing} from "@/Componenets/Authpassing"
 import { CssBaseline, StyledEngineProvider } from "@mui/material";
+import MyForm from "@/Componenets/AI/ai";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,14 +33,14 @@ export default function RootLayout({
          <Authpassing >
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
- 
+{/*  
     <>
     
     <Header/>
     </>
   
-        {children}
-    
+        {children} */}
+    <MyForm/> 
       </body>
     </html>
     </Authpassing>
