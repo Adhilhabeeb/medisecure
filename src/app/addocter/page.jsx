@@ -9,7 +9,7 @@ import {
   MenuItem,
   Paper,
 } from "@mui/material";
-import { Addocter } from "@/Componenets/docter/addpatinettodocter";
+import { Addocter as adddocterfunction } from "@/Componenets/docter/addpatinettodocter";
 
 export default function DocterDetailsPage() {
 
@@ -36,7 +36,7 @@ const [error, seterror] = useState(false)
   const handleSubmit =   (e) => {
     e.preventDefault();
  startloading(async ()=>{
-      let status= await    Addocter(
+      let status= await    adddocterfunction(
       docterdetails
     )
 if (status) {

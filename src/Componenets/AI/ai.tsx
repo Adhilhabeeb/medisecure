@@ -1,38 +1,38 @@
 'use client';
-
+import logo from "../../../public/robot.gif"
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { Typography, Divider, List, ListItem, ListItemButton, ListItemText, TextField, styled } from '@mui/material';
-import { useRouter } from 'next/navigation';
-let username="adhil"
+import { usePathname, useRouter } from 'next/navigation';
 const drawerWidth = 250
-export default function MyForm() {
+export default function MyForm({name}:{name?:string}) {
+let username=  name??"adhil"
+  const [openprofile, setopenprofile] = useState<boolean>(false)
+let path=usePathname()
+useEffect(() => {
+setopenprofile(false)
+}, [path])
+
   const router = useRouter();
   const redirect = (path: string) => {
     router.push(path);
   };
-  let Inputstyled=styled("input")({
-    
-    position:"absolute",
-    bottom:20,left:0,right:0,margin:"auto",
-    width:"90%",
-    padding:"10px",
-    borderRadius:"8px",
-    border:"1px solid #ccc",
-    fontSize:"16px",
-   
-    '& .MuiInputBase-input': {
-        width:"100%",
-      
-        
-        boxSizing:"border-box"
-    
-    },
+  let Logoai=styled("img")({
+    transition: "right 0.3s ease", // ✅ Add this line
+    width:"100px",
+   height:"100px",
+   borderRadius:"50%",
+position:"fixed",
+   bottom:"5%",
+   right: openprofile?"12%":"3%",
+   display:"block",
+   marginLeft:"auto",
+  
+mixBlendMode:"multiply",
   });
 
-  const [openprofile, setopenprofile] = useState<boolean>(true)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [messages, setmessages] = useState<Record<string,string>[]>([])
@@ -81,6 +81,11 @@ useEffect(() => {
       console.error('Error submitting form:', error);
     }
   };
+const [isMounted, setIsMounted] = useState(false);
+
+useEffect(() => {
+  setIsMounted(true);
+}, []);
 
   return (
     // <form onSubmit={handleSubmit}>
@@ -106,47 +111,40 @@ useEffect(() => {
 
     <>
     
-       {openprofile &&
+       { isMounted &&
             ReactDOM.createPortal(
             
-              <>
-             
-
+            
+         
+<Box sx={{position:"fixed",bottom:0,right:0, zIndex:1000}}>
+{openprofile &&
               <Box   
 
               sx={{
                 position:"relative",
-              minHeight:"400px",height:"500px",
+              minHeight:"300px",height:"auto",
                 width:drawerWidth,
            display:"block",
            marginLeft:"auto",
+   
                 bgcolor:"white",
                 boxShadow: 24,
                 borderRadius:2,
               py:2,
                 
-                overflowY:"hidden"
+               
+                boxSizing:"border-box",
               }}
                 >
-                   <TextField    sx={{position:"absolute",bottom:20,left:0,right:0,borderRadius:"8px",boxSizing:"content-box",  width:"80%",zIndex: 1,background:"red",display:"block",marginLeft:"auto",marginRight:"auto"}}
-             value={title}
-             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                handleSubmit(e);
-              }
-            }}
-             placeholder="Type your message..."
-             onChange={(e) => setTitle(e.target.value)} 
-             />
-
+          
 <Typography variant="h6" sx={{ my: 2, textAlign:"center", }}>
-                  Hi, {"adhil"}
+                  Hi, {username}
                 </Typography> <Divider />
-             <Box sx={{width:"100%",height:"500px",overflowY:"scroll",paddingBottom:10,position:"relative"}}  >
+             <Box sx={{width:"100%",height:"500px",overflowY:"scroll",paddingBottom:10,position:"relative",fontSize:"small"}}  >
 
 
 
-    <List>
+    <List    >
                  
                  { messages.length>0 &&
                   messages.map((msg, index) => (<>
@@ -155,11 +153,15 @@ useEffect(() => {
                     sx={{
                    width:"100%",
                    height:"auto",
-                  
+                 
+                      display: "flex",
+                    
+                     
+                   
                     }}
                   
                   >
-                    <ListItemButton  sx={{ fontSize:msg.role=="user"?"small":"small"}} >
+                    <ListItemButton   >
                       <ListItemText  primary={msg.content} />
                     </ListItemButton>
                   </ListItem>
@@ -168,7 +170,41 @@ useEffect(() => {
               
                  }
                 </List>
+       
              </Box>
+
+
+            <Box sx={{background:"red"}}>
+                <TextField sx={{background:"white",
+        
+                
+    position:"absolute",
+    bottom:20,left:0,right:0,margin:"auto",
+    width:"90%",
+  display:"block",
+    borderRadius:"8px",
+
+    fontSize:"16px",
+   
+    '& .MuiInputBase-input': {
+        width:"100%",border:"none",
+      outline:"none",
+        
+        boxSizing:"border-box"
+    
+    },
+   
+              }}  
+             onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                handleSubmit(e);
+              }
+            }}
+
+            onChange={(e) => setTitle(e.target.value)} value={title} 
+             placeholder="Type your message..."
+            />
+            </Box>
               {/* <Box 
             
                 sx={{
@@ -221,9 +257,11 @@ useEffect(() => {
                 
               
               </Box> */}
-              
-              </Box>
-              </>
+            
+              </Box>}
+              <Logoai  onClick={()=>setopenprofile(!openprofile)} src={logo.src}/>
+             </Box>
+      
               
          ,
               document.body

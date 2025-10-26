@@ -33,13 +33,13 @@ export default function RootLayout({
          <Authpassing >
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-{/*  
+ 
     <>
     
     <Header/>
     </>
   
-        {children} */}
+        {children}
     <MyForm/> 
       </body>
     </html>
