@@ -42,7 +42,6 @@ useEffect(() => {
 }, [messages])
 
 
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -109,24 +108,27 @@ useEffect(() => {
     
        {openprofile &&
             ReactDOM.createPortal(
-              <Box   height={{ xs: 'auto', sm: 'auto',md:"500px" }}
-                boxShadow={"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px"}
-                width={drawerWidth}
-                  sx={{
+            
+              <>
+             
 
-                 
-           
-                  position: "fixed",
-                  bottom: "5%",
-                  right: "5%",
-                  zIndex: 2000,
-                boxSizing:"border-box",
-                  bgcolor: "white",
-                  borderRadius: 2,
-                  minWidth: 200,
-                }}
+              <Box   
+
+              sx={{
+                position:"relative",
+              minHeight:"400px",height:"500px",
+                width:drawerWidth,
+           display:"block",
+           marginLeft:"auto",
+                bgcolor:"white",
+                boxShadow: 24,
+                borderRadius:2,
+              py:2,
+                
+                overflowY:"hidden"
+              }}
                 >
-                  <TextField  sx={{position:"absolute",bottom:20,left:0,right:0,margin:"auto",width:"90%",borderRadius:"8px",  zIndex: 2000,}}
+                   <TextField    sx={{position:"absolute",bottom:20,left:0,right:0,borderRadius:"8px",boxSizing:"content-box",  width:"80%",zIndex: 1,background:"red",display:"block",marginLeft:"auto",marginRight:"auto"}}
              value={title}
              onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -136,7 +138,38 @@ useEffect(() => {
              placeholder="Type your message..."
              onChange={(e) => setTitle(e.target.value)} 
              />
-              <Box 
+
+<Typography variant="h6" sx={{ my: 2, textAlign:"center", }}>
+                  Hi, {"adhil"}
+                </Typography> <Divider />
+             <Box sx={{width:"100%",height:"500px",overflowY:"scroll",paddingBottom:10,position:"relative"}}  >
+
+
+
+    <List>
+                 
+                 { messages.length>0 &&
+                  messages.map((msg, index) => (<>
+                  
+                   <ListItem 
+                    sx={{
+                   width:"100%",
+                   height:"auto",
+                  
+                    }}
+                  
+                  >
+                    <ListItemButton  sx={{ fontSize:msg.role=="user"?"small":"small"}} >
+                      <ListItemText  primary={msg.content} />
+                    </ListItemButton>
+                  </ListItem>
+                  
+                  </>))
+              
+                 }
+                </List>
+             </Box>
+              {/* <Box 
             
                 sx={{
 
@@ -187,9 +220,12 @@ useEffect(() => {
            
                 
               
-              </Box>
+              </Box> */}
               
-              </Box>,
+              </Box>
+              </>
+              
+         ,
               document.body
             )}
     
