@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
+  console.log("Groq key loaded?", !!process.env.GROQ_API_KEY);
+
   try {
     const data = await request.json(); // Parse the JSON body
 let {messages}=data
