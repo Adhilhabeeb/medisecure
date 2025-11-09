@@ -1,11 +1,19 @@
 // IndividualPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Shield, Database, FileText, Hospital, Activity, ChevronRight, Lock, Zap, Users, Clock, CheckCircle, Image, Pill, Eye, Plus } from 'lucide-react';
-
+import {connectWallet} from "@/walletconnect/wallectconnect"
+import { Typography } from '@mui/material';
 const IndividualPage = () => {
   const [scrollY, setScrollY] = useState(0);
-
+const [accountfount, setaccountfount] = useState(false)
   useEffect(() => {
+
+
+   async  function name(params) {
+   let account=await    connectWallet()
+   setaccountfount(account)
+    }
+    name()
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -40,7 +48,14 @@ const IndividualPage = () => {
             <div className="space-y-8 animate-fade-in">
               <div className="inline-block">
                 <span className="bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-semibold animate-bounce">
-                  🔐 Blockchain Powered
+                  🔐 Blockchain Powered      
+
+    
+{!accountfount &&  <Typography color="error">
+  
+  
+  
+  I think you have no metamask account  plzz create it first </Typography>}
                 </span>
               </div>
               <h1 className="text-6xl font-bold leading-tight">

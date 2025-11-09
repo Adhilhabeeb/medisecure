@@ -18,6 +18,7 @@ import {
   Paper,
   Alert,
 } from "@mui/material";
+import { connectWallet } from "@/walletconnect/wallectconnect";
 
 function Page() {
   const [message, setMessage] = useState("");
@@ -28,8 +29,14 @@ function Page() {
   const searchParams = useSearchParams();
   const userEmail = searchParams.get("email");
   const router = useRouter();
+  const [accountfound, setaccountfound] = useState(false)
 
   useEffect(() => {
+      async  function name(params) {
+       let account=await    connectWallet()
+       setaccountfound(account)
+        }
+        name()
     const q = query(collection(db, "medidatabase"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const fetched = [];
@@ -73,7 +80,11 @@ function Page() {
         <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
           Sign In
         </Typography>
-
+{!accountfound &&  <Typography color="error">
+  
+  
+  
+  I think you have no metamask account  plzz create it first </Typography>}
         {message && (
           <Alert severity={message.includes("success") ? "success" : "error"} sx={{ mb: 2 }}>
             {message}
