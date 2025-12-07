@@ -45,6 +45,7 @@ let {messages}=data;
   }
 
 const lastMessage ="hello mowne ";
+let username="adhik";
     try {
 
       let gogleresponse= await googlemodel.generateContentStream({
