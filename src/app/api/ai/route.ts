@@ -37,7 +37,7 @@ Remember: You are a supportive health companion, not a replacement for medical p
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json(); // Parse the JSON body
-let {messages}=data
+let {messages}=data;
     // Example: Process the data (e.g., save to a database)
     console.log('Received data: is essfge', messages);
   if (!messages || !Array.isArray(messages)) {

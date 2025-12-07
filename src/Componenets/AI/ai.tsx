@@ -297,7 +297,7 @@ useEffect(() => {
        
         
 
-         }} sx={{bgcolor:"#dd0707ff",border:"0.5px solid black"}}   >
+         }} sx={{bgcolor:"#ff0000ff",border:"0.5px solid black"}}   >
 {listening? <MicOffIcon/> :
   <MicIcon /> }
 </Avatar> 
