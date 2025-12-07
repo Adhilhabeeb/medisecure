@@ -44,7 +44,7 @@ let {messages}=data;
     return NextResponse.json("error", { status: 400 });
   }
 
-const lastMessage ="hello mowne ";
+const lastMessage ="hello mown";
 let username="adhik";
     try {
 
