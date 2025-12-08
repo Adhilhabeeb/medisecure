@@ -44,8 +44,7 @@ let {messages}=data;
     return NextResponse.json("error", { status: 400 });
   }
 
-const lastMessage ="hello mown";
-let username="adhik";
+const lastMessage ="hello mowne ";
     try {
 
       let gogleresponse= await googlemodel.generateContentStream({
