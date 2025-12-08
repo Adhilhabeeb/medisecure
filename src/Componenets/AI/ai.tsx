@@ -62,7 +62,7 @@ export default function MyForm({ name }: { name?: string }) {
     borderRadius: "50%",
     position: "fixed",
     bottom: "5%",
-    right: openprofile ? `${100 + drawerWidth}px` : "3%",
+    right: openprofile ? `${10 + drawerWidth}px` : "3%",
     display: "block",
     marginLeft: "auto",
     mixBlendMode: "multiply",
